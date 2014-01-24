@@ -88,4 +88,39 @@ void GB_CPU_LD_16(u16* from, u16* loadTo);
 	*from = *loadTo;
 }
 
-void 
+void GB_CPU_PUSH_16(u16* reg)
+{
+	GB_CPU_reg_SP = GB_CPU_reg_SP - 2;
+	*((u16*) (GB_main_memory + GB_CPU_reg_SP)) = *reg;
+}
+
+void GB_CPU_POP_16(u16* reg)
+{
+	*reg = *((u16*) (GB_main_memory + GB_CPU_reg_SP))
+	GB_CPU_reg_SP = GB_CPU_reg_SP + 2;
+}
+
+void GB_CPU_ADD_8(u8* reg1, u8* reg2)
+{
+
+}
+void GB_CPU_SUB_8(u8* reg1, u8* reg2)
+{
+
+}
+void GB_CPU_SBC_8(u8* reg1, u8* reg2)
+{
+
+}
+void GB_CPU_INC_8(u8* reg)
+{
+
+}
+void GB_CPU_DEC_8(u8* reg)
+{
+
+}
+void GB_CPU_DAA_8(u8* reg1, u8* reg2)
+{
+	
+}

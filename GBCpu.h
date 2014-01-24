@@ -13,7 +13,7 @@
 
 //  Registers
 //  Each 16 bit Hi/Lo
-u8 GB_CPU_REG_AF[2];  // Low byte F for CPU flag
+u8 GB_CPU_reg_AF[2];  // Low byte F for CPU flag
 /*
  The Flag Register (lower 8bit of AF register)
  Bit  Name  Set Clr  Expl.
@@ -23,12 +23,13 @@ u8 GB_CPU_REG_AF[2];  // Low byte F for CPU flag
  4    cy    C   NC   Carry Flag
  3-0  -     -   -    Not used (always zero)
 */
-u8 GB_CPU_REG_BC[2];
-u8 GB_CPU_REG_DE[2];
-u8 GB_CPU_REG_HL[2];
-u16 GB_CPU_REG_SP; 	// Stack Pointer
-u16 GB_CPU_REG_PC; 	// Program Counter
+u8 GB_CPU_reg_BC[2];
+u8 GB_CPU_reg_DE[2];
+u8 GB_CPU_reg_HL[2];
+u16 GB_CPU_reg_SP; 	// Stack Pointer
+u16 GB_CPU_reg_PC; 	// Program Counter
 
+extern u8* GB_main_memory;
 
 void u8_Set_Bit(u8* wordToSet, u8 bitNumb);
 void u16_Set_Bit(u16* wordToSet, u8 bitNumb);
@@ -83,18 +84,6 @@ void GB_CPU_AND(u8* reg1, u8* reg2);
 void GB_CPU_XOR(u8* reg1, u8* reg2);
 void GB_CPU_XOR(u8* reg1, u8* reg2);
 void GB_CPU_CP(u8* reg1, u8* reg2);
-
-
-// Increment 16 bits value from
-void GB_CPU_INC_16(u16* reg);
-
-
-// Decrement 16 bits value from
-void GB_CPU_DEC_16(u16* reg);
-
-
-void GB_CPU_ADD_16(u16* reg1, u16* reg2);
-
 
 
 

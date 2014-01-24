@@ -20,9 +20,9 @@ int main()
 			else
 				second = 'A' + (j-10);
 
-			printf("void GB_CPU_OPCODE_0x%c%c();\n",first,second);
+			//printf("void GB_CPU_OPCODE_0x%c%c();\n",first,second);
 			//printf("&GB_CPU_OPCODE_0x%c%c,\n",first,second);
-			//printf("void GB_CPU_OPCODE_0x%c%c();\n{\n\n}\n",first,second);
+			printf("void GB_CPU_OPCODE_0x%c%c()\n{\n\n}\n",first,second);
 		}
 		printf("\n");
 	}
