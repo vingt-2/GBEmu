@@ -1,3 +1,5 @@
+#include"GBCpu_Opcodes.h"
+
 void GB_CPU_OPCODE_0x00()
 {
     // Do nothing
@@ -7,7 +9,7 @@ void GB_CPU_OPCODE_0x01() // load 16bit value into
 {
 	GB_Increment_PC(1);
 
-	*((u16*) GB_CPU_BC) = GB_Get_u16_PC();
+	*((u16*) GB_CPU_reg_BC) = GB_Get_u16_PC();
 
 	GB_Increment_PC(2);   
 }
@@ -16,30 +18,31 @@ void GB_CPU_OPCODE_0x02() // 8bit load A to (BC)
 {
 	GB_Increment_PC(1);
 
-	GB_CPU_BC[0] = 0x00;
-	GB_CPU_BC[1] = GB_CPU_AF[0]; // C = A
+	GB_CPU_reg_BC[0] = 0x00;
+	GB_CPU_reg_BC[1] = GB_CPU_reg_AF[0]; // C = A
 }
 
 void GB_CPU_OPCODE_0x03() // Increment BC
 {
 	GB_Increment_PC(1);
 
-	&((u16*) GB_CPU_BC) += 1;
+	&((u16*) GB_CPU_reg_BC) += 1;
 }
 
 void GB_CPU_OPCODE_0x04() // Increment B
 {
 	GB_Increment_PC(1);
 
-	GB_CPU_BC[0] += 0x01;
+	GB_CPU_reg_BC[0] += 0x01;
 
-	if(GB_CPU_BC[0] == 0x00)
+	if(GB_CPU_reg_BC[0] == 0x00)
 	{
 		// Set Z flag to 1
 		GB_CPU_Set_Flag_Z();
 	}
 
 	GB_CPU_Reset_Flag_N();
+}
 
 void GB_CPU_OPCODE_0x06()
 {

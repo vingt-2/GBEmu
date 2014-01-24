@@ -8,6 +8,7 @@
 #define GB_MAIN_MEMORY_SIZE 0xFFFF-1
 
 #include <stdint.h>
+#include <stdio.h>
 
 typedef uint8_t u8;
 typedef int8_t s8;

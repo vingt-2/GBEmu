@@ -37,15 +37,15 @@ void u8_Reset_Bit(u8* wordToReset, u8 bitNumb);
 void u16_Reset_Bit(u16* wordToReset, u8 bitNumb);
 
 
-void GB_CPU_Set_Flag_Z() { u8_Set_Bit(&GB_CPU_AF[1],7); }
-void GB_CPU_Set_Flag_N() { u8_Set_Bit(&GB_CPU_AF[1],6); }
-void GB_CPU_Set_Flag_H() { u8_Set_Bit(&GB_CPU_AF[1],5); }
-void GB_CPU_Set_Flag_C() { u8_Set_Bit(&GB_CPU_AF[1],4); }
+void GB_CPU_Set_Flag_Z() { u8_Set_Bit(&GB_CPU_reg_AF[1],7); }
+void GB_CPU_Set_Flag_N() { u8_Set_Bit(&GB_CPU_reg_AF[1],6); }
+void GB_CPU_Set_Flag_H() { u8_Set_Bit(&GB_CPU_reg_AF[1],5); }
+void GB_CPU_Set_Flag_C() { u8_Set_Bit(&GB_CPU_reg_AF[1],4); }
 
-void GB_CPU_Reset_Flag_Z() { u8_Reset_Bit(&GB_CPU_AF[1],7); }
-void GB_CPU_Reset_Flag_N() { u8_Reset_Bit(&GB_CPU_AF[1],6); }
-void GB_CPU_Reset_Flag_H() { u8_Reset_Bit(&GB_CPU_AF[1],5); }
-void GB_CPU_Reset_Flag_C() { u8_Reset_Bit(&GB_CPU_AF[1],4); }
+void GB_CPU_Reset_Flag_Z() { u8_Reset_Bit(&GB_CPU_reg_AF[1],7); }
+void GB_CPU_Reset_Flag_N() { u8_Reset_Bit(&GB_CPU_reg_AF[1],6); }
+void GB_CPU_Reset_Flag_H() { u8_Reset_Bit(&GB_CPU_reg_AF[1],5); }
+void GB_CPU_Reset_Flag_C() { u8_Reset_Bit(&GB_CPU_reg_AF[1],4); }
 
 // Process command
 u8 GB_CPU_Process(u8 opcode);

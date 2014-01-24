@@ -2,6 +2,7 @@
 	Defines opcode for the CPU, Please refer to the Gameboy CPU documentation to
 	find the table of instructions related to those opcodes
 */
+#include "GBCpu.h"
 
 void GB_CPU_OPCODE_0x00();
 void GB_CPU_OPCODE_0x01();
