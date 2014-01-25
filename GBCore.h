@@ -4,7 +4,6 @@
     Analogy with the actual hardware would be a motherboard
  
 */
-
 #define GB_MAIN_MEMORY_SIZE 0xFFFF-1
 
 #include <stdint.h>

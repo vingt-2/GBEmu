@@ -13,8 +13,15 @@
 
 //  Registers
 //  Each 16 bit Hi/Lo
-u8 GB_CPU_reg_AF[2];  // Low byte F for CPU flag
+
+
+
+u8 GB_CPU_reg_AF[2];  
 /*
+ The AF Register is very special,
+ The High register is the accumulator, where operations are stored,
+ 
+ The Low register is used for flags
  The Flag Register (lower 8bit of AF register)
  Bit  Name  Set Clr  Expl.
  7    zf    Z   NZ   Zero Flag
@@ -23,6 +30,7 @@ u8 GB_CPU_reg_AF[2];  // Low byte F for CPU flag
  4    cy    C   NC   Carry Flag
  3-0  -     -   -    Not used (always zero)
 */
+
 u8 GB_CPU_reg_BC[2];
 u8 GB_CPU_reg_DE[2];
 u8 GB_CPU_reg_HL[2];
@@ -76,19 +84,19 @@ void GB_CPU_PUSH_16(u16* reg);
 void GB_CPU_POP_16(u16* reg);
 
 // 8bit-Arithmetic
-void GB_CPU_ADD_8(u8* reg1, u8* reg2);
-void GB_CPU_ADC_8(u8* reg1, u8* reg2);
-void GB_CPU_SUB_8(u8* reg1, u8* reg2);
-void GB_CPU_SBC_8(u8* reg1, u8* reg2);
+void GB_CPU_ADD_8(u8* reg);
+void GB_CPU_ADC_8(u8* reg);
+void GB_CPU_SUB_8(u8* reg);
+void GB_CPU_SBC_8(u8* reg);
 void GB_CPU_INC_8(u8* reg);
 void GB_CPU_DEC_8(u8* reg);
-void GB_CPU_DAA_8(u8* reg1, u8* reg2);
+void GB_CPU_DAA_8();
 
 // 8bit-Logical
-void GB_CPU_AND(u8* reg1, u8* reg2);
-void GB_CPU_OR(u8* reg1, u8* reg2);
-void GB_CPU_XOR(u8* reg1, u8* reg2);
-void GB_CPU_CP(u8* reg1, u8* reg2);
+void GB_CPU_AND(u8* reg);
+void GB_CPU_OR(u8* reg);
+void GB_CPU_XOR(u8* reg);
+void GB_CPU_CP(u8* reg);
 
 // 16bit-Arithmetic and Logic
 void GB_CPU_ADD_16(u16* reg1, u16* reg2);
