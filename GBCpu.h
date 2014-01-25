@@ -47,6 +47,10 @@ void GB_CPU_Reset_Flag_N() { u8_Reset_Bit(&GB_CPU_reg_AF[1],6); }
 void GB_CPU_Reset_Flag_H() { u8_Reset_Bit(&GB_CPU_reg_AF[1],5); }
 void GB_CPU_Reset_Flag_C() { u8_Reset_Bit(&GB_CPU_reg_AF[1],4); }
 
+void GB_CPU_Set_All_flags();
+void GB_CPU_Reset_All_Flags();
+
+
 // Process command
 u8 GB_CPU_Process(u8 opcode);
 
@@ -73,6 +77,7 @@ void GB_CPU_POP_16(u16* reg);
 
 // 8bit-Arithmetic
 void GB_CPU_ADD_8(u8* reg1, u8* reg2);
+void GB_CPU_ADC_8(u8* reg1, u8* reg2);
 void GB_CPU_SUB_8(u8* reg1, u8* reg2);
 void GB_CPU_SBC_8(u8* reg1, u8* reg2);
 void GB_CPU_INC_8(u8* reg);
@@ -81,13 +86,12 @@ void GB_CPU_DAA_8(u8* reg1, u8* reg2);
 
 // 8bit-Logical
 void GB_CPU_AND(u8* reg1, u8* reg2);
-void GB_CPU_XOR(u8* reg1, u8* reg2);
+void GB_CPU_OR(u8* reg1, u8* reg2);
 void GB_CPU_XOR(u8* reg1, u8* reg2);
 void GB_CPU_CP(u8* reg1, u8* reg2);
 
-
-
-
-
-
+// 16bit-Arithmetic and Logic
+void GB_CPU_ADD_16(u16* reg1, u16* reg2);
+void GB_CPU_INC_16(u16* reg1, u16* reg2);
+void GB_CPU_DEC_16(u16* reg1, u16* reg2);
 
