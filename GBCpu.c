@@ -1,5 +1,15 @@
 #include "GBCpu.h"
 
+int main()
+{
+	GB_CPU_reg_AF[0] = 0x18;
+	GB_CPU_DEC_8(GB_CPU_reg_AF);
+
+	printf("%i",(int) GB_CPU_reg_AF[0]);
+
+	return 0;
+}
+
 void u8_Set_Bit(u8* wordToSet, u8 bitNumber)
 {
 	u8 bitmask = 0x01;
@@ -243,7 +253,7 @@ void GB_CPU_DEC_8(u8* reg)
 
 	GB_CPU_Reset_All_Flags();
 
-	result = *reg  +  0xFF;
+	result = *reg  +  0xFF;	// 0xFF = twos complement value of -1
 	
 	carry = *reg ^ 0xFF ^ result;
 	
@@ -442,3 +452,101 @@ void GB_CPU_XOR(u8* reg)
 		GB_CPU_Set_Flag_Z();
 	}
 }
+
+void GB_CPU_CP(u8* reg)
+{
+	u8 accu_content = GB_CPU_reg_AF[0];
+
+	GB_CPU_SUB_8(reg);
+
+	GB_CPU_reg_AF[0] = accu_content;
+}
+
+void GB_CPU_CPL()
+{
+	u8 accu_content = GB_CPU_reg_AF[0];
+
+	GB_CPU_reg_AF[0] = (accu_content ^ 0xFF);
+}
+
+void GB_CPU_ADD_16(u16* reg)
+{
+	u16 hl_reg_content, result;
+	u32 carry, overflowTest;
+	GB_CPU_Reset_Flag_N();
+
+	hl_reg_content = *( (u16*) GB_CPU_reg_HL );
+
+	overflowTest = (u32) hl_reg_content + (u32) *reg;
+
+	carry = overflowTest ^ (u32) hl_reg_content ^ (u32) *reg;
+
+	if( (carry & 0x00000100) != 0x00000000 )
+	{
+		GB_CPU_Set_Flag_H();
+	}
+	if( (carry & 0x00010000) != 0x00000000 )
+	{
+		GB_CPU_Set_Flag_C();
+	}
+
+	result = hl_reg_content + *reg;
+
+	if(result == 0x0000)
+	{
+		GB_CPU_Set_Flag_Z();
+	}
+}
+
+void GB_CPU_INC_16(u16* reg)
+{
+	*reg ++;
+}
+
+void GB_CPU_DEC_16(u16* reg)
+{
+	*reg --;
+}
+
+void GB_CPU_ADD_TO_SP(u8* reg)
+{
+	u16 hl_content, add_value;
+
+	if( (*reg & 0x10) != 0x00 ) // negative u8 value in reg
+	{
+		// absolute value of the negative u8
+		u8 twos_complement = ~*reg + 0x01;
+
+		hl_content = *((u16*) GB_CPU_reg_HL);
+
+		// u16 converted negative
+		add_value =  ~((u16) twos_complement) + 0x0001;
+	}
+	else
+	{
+		add_value =  (u16) *reg;
+	}
+
+	// Place stack Pointer into HL register for operation
+	*((u16*) GB_CPU_reg_HL) = GB_CPU_reg_SP;
+	GB_CPU_ADD_16(&add_value);
+
+	// read added value from the HL register
+	GB_CPU_reg_SP = *((u16*) GB_CPU_reg_HL);
+
+	// Restore HL register 
+	*((u16*) GB_CPU_reg_HL) = hl_content;
+
+}
+
+void GB_CPU_LD_OFFSET_16(u16* reg)
+{
+	u16 stack_pointer = GB_CPU_reg_SP;
+
+	GB_CPU_ADD_TO_SP(*reg);
+
+	*((u16*) GB_CPU_reg_HL) = GB_CPU_reg_SP;
+
+	GB_CPU_reg_SP = stack_pointer;
+}
+

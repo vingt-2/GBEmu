@@ -1,7 +1,7 @@
 #include"GBCpu_Opcodes.h"
 
-void GB_CPU_OPCODE_0x00(void) // Does nothing
-{}
+void GB_CPU_OPCODE_0x00(void)
+{}	// Does nothing
 
 void GB_CPU_OPCODE_0x01(void) // load 16bit value into
 {

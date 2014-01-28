@@ -79,7 +79,7 @@ void GB_CPU_LDI_8(u8* reg1, u8* reg2);
 void GB_CPU_LDD_8(u8* reg1, u8* reg2);
 
 // 16bit-Load Commands
-void GB_CPU_LDI_16(u16* from, u16* loadTo);
+void GB_CPU_LD_16(u16* from, u16* loadTo);
 void GB_CPU_PUSH_16(u16* reg);
 void GB_CPU_POP_16(u16* reg);
 
@@ -97,9 +97,14 @@ void GB_CPU_AND(u8* reg);
 void GB_CPU_OR(u8* reg);
 void GB_CPU_XOR(u8* reg);
 void GB_CPU_CP(u8* reg);
+void GB_CPU_CPL();
 
 // 16bit-Arithmetic and Logic
-void GB_CPU_ADD_16(u16* reg1, u16* reg2);
-void GB_CPU_INC_16(u16* reg1, u16* reg2);
-void GB_CPU_DEC_16(u16* reg1, u16* reg2);
+void GB_CPU_ADD_16(u16* reg);
+void GB_CPU_INC_16(u16* reg);
+void GB_CPU_DEC_16(u16* reg);
+void GB_CPU_ADD_TO_SP(u16* reg);
+void GB_CPU_LD_OFFSET_16(u16* reg);
+
+// Rotate and shift bit operations
 
