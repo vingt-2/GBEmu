@@ -58,6 +58,12 @@ void GB_CPU_Reset_Flag_C() { u8_Reset_Bit(&GB_CPU_reg_AF[1],4); }
 void GB_CPU_Set_All_flags();
 void GB_CPU_Reset_All_Flags();
 
+u8 GB_CPU_Get_Flag_H()			{ return (GB_CPU_reg_AF[1] & 0x20);	}
+u8 GB_CPU_Get_Flag_N()			{ return (GB_CPU_reg_AF[1] & 0x40);	}
+u8 GB_CPU_Get_Flag_C() 			{ return (GB_CPU_reg_AF[1] & 0x10);	}
+u8 GB_CPU_Get_Flag_Z()			{ return (GB_CPU_Reg_AF[1] & 0x80);	}
+
+
 
 // Process command
 u8 GB_CPU_Process(u8 opcode);
@@ -66,7 +72,7 @@ u8 GB_CPU_Process(u8 opcode);
 void GB_Increment_PC(u16 offset);
 
 // Get immediate values from main memory at wherer the program Counter points
-u8 GB_Get_u8_PC();	// get immediate 8bits value
+u8 GB_Get_u8_PC();	// get immediate b8its value
 u16 GB_Get_u16_PC(); // get immediate 16 bits value
 
 /*
@@ -107,4 +113,11 @@ void GB_CPU_ADD_TO_SP(u16* reg);
 void GB_CPU_LD_OFFSET_16(u16* reg);
 
 // Rotate and shift bit operations
-
+void GB_CPU_RLC(u8* reg);
+void GB_CPU_RRC(u8* reg);
+void GB_CPU_RR(u8* reg);
+void GB_CPU_RR(u8* reg);
+void GB_CPU_SLA(u8* reg);
+void GB_CPU_SWAP(u8* reg);
+void GB_CPU_SRA(u8* reg);
+void GB_CPU_SRL(u8* reg);

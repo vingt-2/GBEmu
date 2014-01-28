@@ -300,9 +300,10 @@ DAA Decimal Adjust After Addition:
 
 void GB_CPU_DAA_8()
 {
-	u8 half_carry_flag 	= (GB_CPU_reg_AF[1] & 0x20);
-	u8 sub_op_flag 		= (GB_CPU_reg_AF[1] & 0x40);
-	u8 full_carry_flag	= (GB_CPU_reg_AF[1] & 0x10);
+	u8 half_carry_flag 	= GB_CPU_Get_Half_Carry_Flag();
+	u8 sub_op_flag 		= GB_CPU_Get_Sub_Op_Flag();
+	u8 full_carry_flag	= GB_CPU_Get_Carry_Flag();
+
 	u8 accu_content 	= GB_CPU_reg_AF[0];
 	u8 result 			= accu_content;
 
@@ -549,4 +550,30 @@ void GB_CPU_LD_OFFSET_16(u16* reg)
 
 	GB_CPU_reg_SP = stack_pointer;
 }
+
+void GB_CPU_RLC(u8* reg)
+{
+	u8 reg_content = *reg;
+
+	u8 c_flag = GB_CPU_Get_Flag_C();
+
+	if( (reg_content & 0x80) != 0x00)
+	{
+		GB_CPU_Set_Flag_C();
+	}
+	else
+	{
+		GB_CPU_Reset_Flag_C();
+	}
+	
+	if( c_flag != 0x00 )
+	{
+		reg_content = ( (reg_content << 1) | 0x01 );
+	}
+	else
+	{
+		reg_content = ( reg_content << 1 | 0xFB);
+	}
+}
+
 
