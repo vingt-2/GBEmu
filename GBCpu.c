@@ -73,8 +73,8 @@ u8 GB_Get_u8_PC()
 u16 GB_Get_u16_PC()
 {
     extern u8* GB_main_memory;
-   
-    return (u16) *(GB_main_memory + GB_CPU_reg_PC);
+  
+     return (u16) *(GB_main_memory + GB_CPU_reg_PC);
 }
 
 
@@ -272,24 +272,136 @@ DAA Decimal Adjust After Addition:
 |           | DAA     | (bit 7-4)    | DAA    | (bit 3-0)    | to byte | DAA   |
 |------------------------------------------------------------------------------|
 |           |    0    |     0-9      |   0    |     0-9      |   00    |   0   |
-|   ADD     |    0    |     0-8      |   0    |     A-F      |   06    |   0   |
+|    ADD    |    0    |     0-8      |   0    |     A-F      |   06    |   0   |
 |           |    0    |     0-9      |   1    |     0-3      |   06    |   0   |
-|   ADC     |    0    |     A-F      |   0    |     0-9      |   60    |   1   |
+|   (ADC)   |    0    |     A-F      |   0    |     0-9      |   60    |   1   |
 |           |    0    |     9-F      |   0    |     A-F      |   66    |   1   |
-|   INC     |    0    |     A-F      |   1    |     0-3      |   66    |   1   |
+|   (INC)   |    0    |     A-F      |   1    |     0-3      |   66    |   1   |
 |           |    1    |     0-2      |   0    |     0-9      |   60    |   1   |
 |           |    1    |     0-2      |   0    |     A-F      |   66    |   1   |
 |           |    1    |     0-3      |   1    |     0-3      |   66    |   1   |
 |------------------------------------------------------------------------------|
-|   SUB     |    0    |     0-9      |   0    |     0-9      |   00    |   0   |
-|   SBC     |    0    |     0-8      |   1    |     6-F      |   FA    |   0   |
-|   DEC     |    1    |     7-F      |   0    |     0-9      |   A0    |   1   |
-|   NEG     |    1    |     6-F      |   1    |     6-F      |   9A    |   1   |
+|    SUB    |    0    |     0-9      |   0    |     0-9      |   00    |   0   |
+|   (SBC)   |    0    |     0-8      |   1    |     6-F      |   FA    |   0   |
+|   (DEC)   |    1    |     7-F      |   0    |     0-9      |   A0    |   1   |
+|   (NEG)   |    1    |     6-F      |   1    |     6-F      |   9A    |   1   |
 |------------------------------------------------------------------------------|
 */
+
 void GB_CPU_DAA_8()
 {
-	
+	u8 half_carry_flag 	= (GB_CPU_reg_AF[1] & 0x20);
+	u8 sub_op_flag 		= (GB_CPU_reg_AF[1] & 0x40);
+	u8 full_carry_flag	= (GB_CPU_reg_AF[1] & 0x10);
+	u8 accu_content 	= GB_CPU_reg_AF[0];
+	u8 result 			= accu_content;
+
+	// If previous operation was an addition
+	if(sub_op_flag == 0x00)
+	{
+		if(full_carry_flag == 0x00)
+		{
+			// Previous operation was an addition
+			if(half_carry_flag == 0x00)
+			{
+				// No carry out to upper nibble
+				if( (accu_content & 0x0F) >= 0x0A )
+				{
+					if( (accu_content & 0xF0) > 0x80 )
+					{
+						result += 0x66;
+						GB_CPU_Set_Flag_C();
+					}
+					else
+					{
+						result += 0x06;
+						GB_CPU_Reset_Flag_C();
+					}
+				}
+				else
+				{
+					if((accu_content & 0xF0) >= 0x90)
+					{
+						result += 0x60;
+						GB_CPU_Set_Flag_C();
+					}
+					else
+					{
+						GB_CPU_Reset_Flag_C();
+					}
+				}
+			}
+			else
+			{
+				if( (accu_content & 0xF0) < 0xA0)
+				{
+					result += 0x06;
+					GB_CPU_Reset_Flag_C();
+				}
+				else
+				{
+					result += 0x66;
+					GB_CPU_Set_Flag_C();
+				}
+			}
+		}
+		else
+		{
+			// Previous operation was an addition
+			if(half_carry_flag == 0x00)
+			{
+				// No carry out to upper nibble
+				if( (accu_content & 0x0F) < 0x0A )
+				{
+					result += 0x60;
+				}
+				else
+				{
+					result += 0x66;
+				}
+			}
+			else
+			{
+					result += 0x66;
+			}
+			GB_CPU_Set_Flag_C();
+		}
+	}
+	else
+	{
+		if(full_carry_flag == 0x00)
+		{
+			// Previous operation was an addition
+			if(half_carry_flag == 0x00)
+			{
+				// Add nothing
+			}
+			else
+			{
+				result += 0xFA;
+			}
+			GB_CPU_Reset_Flag_C();
+		}
+		else
+		{
+			if(half_carry_flag == 0x00)
+			{
+				result += 0xA0;
+			}
+			else
+			{
+				result += 0x9A;
+			}
+			GB_CPU_Set_Flag_C();
+		}
+	}
+	if(result == 0x00)
+	{
+		GB_CPU_Set_Flag_Z();
+	}
+	GB_CPU_Reset_Flag_H();
+
+	GB_CPU_reg_AF[0] = result;
 }
 
 void GB_CPU_AND(u8* reg)
