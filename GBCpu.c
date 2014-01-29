@@ -43,6 +43,22 @@ void u16_Reset_Bit(u16* wordToReset, u8 bitNumber)
 	*wordToReset = (*wordToReset & ~bitmask);
 }
 
+u8 u8_Test_Bit(u8* wordToTest, u8 bitNumb)
+{
+	u8 test_mask = 0x01;
+	test_mask << bitNumb;
+
+	return (*wordToTest & bitNumb);
+}
+
+u16 u16_Test_Bit(u16* wordToTest, u8 bitNumb)
+{
+	u16 test_mask = 0x0001;
+	test_mask << bitNumb;
+
+	return (*wordToTest & bitNumb);
+}
+
 void GB_CPU_Set_All_Flags()
 {
 	GB_CPU_Set_Flag_Z();
@@ -300,9 +316,9 @@ DAA Decimal Adjust After Addition:
 
 void GB_CPU_DAA_8()
 {
-	u8 half_carry_flag 	= GB_CPU_Get_Half_Carry_Flag();
-	u8 sub_op_flag 		= GB_CPU_Get_Sub_Op_Flag();
-	u8 full_carry_flag	= GB_CPU_Get_Carry_Flag();
+	u8 half_carry_flag 	= GB_CPU_Get_Flag_H();
+	u8 sub_op_flag 		= GB_CPU_Get_Flag_N();
+	u8 full_carry_flag	= GB_CPU_Get_Flag_C();
 
 	u8 accu_content 	= GB_CPU_reg_AF[0];
 	u8 result 			= accu_content;
@@ -540,40 +556,152 @@ void GB_CPU_ADD_TO_SP(u8* reg)
 
 }
 
-void GB_CPU_LD_OFFSET_16(u16* reg)
+void GB_CPU_LD_OFFSET(u8* reg)
 {
 	u16 stack_pointer = GB_CPU_reg_SP;
 
-	GB_CPU_ADD_TO_SP(*reg);
+	GB_CPU_ADD_TO_SP(reg);
 
 	*((u16*) GB_CPU_reg_HL) = GB_CPU_reg_SP;
 
 	GB_CPU_reg_SP = stack_pointer;
 }
 
-void GB_CPU_RLC(u8* reg)
+void GB_CPU_RL(u8* reg)
 {
 	u8 reg_content = *reg;
-
 	u8 c_flag = GB_CPU_Get_Flag_C();
 
-	if( (reg_content & 0x80) != 0x00)
-	{
-		GB_CPU_Set_Flag_C();
-	}
-	else
-	{
-		GB_CPU_Reset_Flag_C();
-	}
-	
+	GB_CPU_Reset_All_Flags();
+
+	((reg_content & 0x80) != 0x00) ? GB_CPU_Set_Flag_C() : GB_CPU_Reset_Flag_C();
+
 	if( c_flag != 0x00 )
 	{
 		reg_content = ( (reg_content << 1) | 0x01 );
 	}
 	else
 	{
-		reg_content = ( reg_content << 1 | 0xFB);
+		reg_content = ( (reg_content << 1) & 0xFB );
+	}
+
+	(reg_content != 0x00) ? GB_CPU_Reset_Flag_Z() : GB_CPU_Set_Flag_Z();
+
+	*reg = reg_content;
+}
+
+void GB_CPU_RR(u8* reg)
+{
+	u8 reg_content = *reg;
+	u8 c_flag = GB_CPU_Get_Flag_C();
+
+	GB_CPU_Reset_All_Flags();
+
+	((reg_content & 0x01) != 0x00) ? GB_CPU_Set_Flag_C() : GB_CPU_Reset_Flag_C();
+
+	if(c_flag != 0x00)
+	{
+		reg_content = ( (reg_content >> 1 ) | 0x80 );
+	}
+	else
+	{
+		reg_content = ( (reg_content >> 1) & 0x7F );
+	}
+
+	(reg_content != 0x00) ? GB_CPU_Reset_Flag_Z() : GB_CPU_Set_Flag_Z();
+
+	*reg = reg_content;
+}
+
+void GB_CPU_RLC(u8* reg)
+{
+	GB_CPU_Reset_All_Flags();
+	u8 reg_content = *reg;
+
+	( (reg_content >> 7) != 0x00 ) ? GB_CPU_Set_Flag_C() : GB_CPU_Reset_Flag_C();
+
+	*reg = ( (reg_content << 1) | (reg_content >> 7) );
+}
+
+void GB_CPU_RRC(u8* reg)
+{
+	GB_CPU_Reset_All_Flags();
+	u8 reg_content = *reg;
+
+	( (reg_content << 7) != 0x00 ) ? GB_CPU_Set_Flag_C() : GB_CPU_Reset_Flag_C();
+
+	*reg = ( (reg_content >> 1) | (reg_content << 7) );
+}
+
+void GB_CPU_RLC_Accu()
+{
+	GB_CPU_RLC(GB_CPU_reg_AF);
+	GB_CPU_Reset_Flag_Z();
+}
+void GB_CPU_RRC_Accu()
+{
+	GB_CPU_RRC(GB_CPU_reg_AF);
+	GB_CPU_Reset_Flag_Z();
+}
+void GB_CPU_RL_Accu()
+{
+	GB_CPU_RL(GB_CPU_reg_AF);
+	GB_CPU_Reset_Flag_Z();
+}
+void GB_CPU_RR_Accu()
+{
+	GB_CPU_RR(GB_CPU_reg_AF);
+	GB_CPU_Reset_Flag_Z();
+}
+
+void GB_CPU_SLA(u8* reg)
+{
+	*reg = (u8) *((s8*) reg) << 1;
+}
+
+void GB_CPU_SRA(u8* reg)
+{
+	*reg = (u8) *((s8*) reg) >> 1;
+}
+
+void GB_CPU_SRL(u8* reg)
+{
+	*reg = *reg >> 1;
+}
+
+void GB_CPU_SWAP(u8* reg)
+{
+	u8 reg_content = *reg;
+
+	u8 hi_nibble = (reg_content & 0xF0);
+	u8 lo_nibble = (reg_content & 0x0F);
+
+	*reg = ( (lo_nibble << 4) | (hi_nibble >> 4) );
+}
+void GB_CPU_BIT(u8* reg1, u8* reg2)
+{
+	GB_CPU_Reset_Flag_N();
+	GB_CPU_Set_Flag_H();
+	if(u8_Test_Bit(reg1,*reg2) != 0x00)
+	{
+		GB_CPU_Reset_Flag_Z();
+	}
+	else
+	{
+		GB_CPU_Set_Flag_Z();
 	}
 }
+
+void GB_CPU_SET(u8* reg1,u8* reg2)
+{
+	u8_Set_Bit(reg1, *reg2);
+}
+
+void GB_CPU_RES(u8* reg1, u8* reg2)
+{
+	u8_Reset_Bit(reg1,*reg2);
+}
+
+
 
 

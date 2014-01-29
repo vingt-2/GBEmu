@@ -43,6 +43,8 @@ void u8_Set_Bit(u8* wordToSet, u8 bitNumb);
 void u16_Set_Bit(u16* wordToSet, u8 bitNumb);
 void u8_Reset_Bit(u8* wordToReset, u8 bitNumb);
 void u16_Reset_Bit(u16* wordToReset, u8 bitNumb);
+u8 u8_Test_Bit(u8* wordToTest, u8 bitNumb);
+u16 u16_Test_Bit(u16* wordToTest, u8 bitNumb);
 
 
 void GB_CPU_Set_Flag_Z() { u8_Set_Bit(&GB_CPU_reg_AF[1],7); }
@@ -61,7 +63,7 @@ void GB_CPU_Reset_All_Flags();
 u8 GB_CPU_Get_Flag_H()			{ return (GB_CPU_reg_AF[1] & 0x20);	}
 u8 GB_CPU_Get_Flag_N()			{ return (GB_CPU_reg_AF[1] & 0x40);	}
 u8 GB_CPU_Get_Flag_C() 			{ return (GB_CPU_reg_AF[1] & 0x10);	}
-u8 GB_CPU_Get_Flag_Z()			{ return (GB_CPU_Reg_AF[1] & 0x80);	}
+u8 GB_CPU_Get_Flag_Z()			{ return (GB_CPU_reg_AF[1] & 0x80);	}
 
 
 
@@ -109,15 +111,37 @@ void GB_CPU_CPL();
 void GB_CPU_ADD_16(u16* reg);
 void GB_CPU_INC_16(u16* reg);
 void GB_CPU_DEC_16(u16* reg);
-void GB_CPU_ADD_TO_SP(u16* reg);
-void GB_CPU_LD_OFFSET_16(u16* reg);
+void GB_CPU_ADD_TO_SP(u8* reg);
+void GB_CPU_LD_OFFSET(u8* reg);
 
 // Rotate and shift bit operations
 void GB_CPU_RLC(u8* reg);
 void GB_CPU_RRC(u8* reg);
+void GB_CPU_RL(u8* reg);
 void GB_CPU_RR(u8* reg);
-void GB_CPU_RR(u8* reg);
+void GB_CPU_RLC_Accu();
+void GB_CPU_RRC_Accu();
+void GB_CPU_RL_Accu();
+void GB_CPU_RR_Accu();
 void GB_CPU_SLA(u8* reg);
 void GB_CPU_SWAP(u8* reg);
 void GB_CPU_SRA(u8* reg);
 void GB_CPU_SRL(u8* reg);
+
+// Singlebit Operation Commands
+void GB_CPU_BIT(u8* reg1,u8* reg2);
+void GB_CPU_SET(u8* reg1,u8* reg2);
+void GB_CPU_RES(u8* reg1,u8* reg2);
+
+//GMB CPU-Controlcommands
+/*
+  ccf            3F           4 -00c cy=cy xor 1
+  scf            37           4 -001 cy=1
+  nop            00           4 ---- no operation
+  halt           76         N*4 ---- halt until interrupt occurs (low power)
+  stop           10 00        ? ---- low power standby mode (VERY low power)
+  di             F3           4 ---- disable interrupts, IME=0
+  ei             FB           4 ---- enable interrupts, IME=1
+*/
+
+  // a ? b : c
