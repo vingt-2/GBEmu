@@ -702,6 +702,24 @@ void GB_CPU_RES(u8* reg1, u8* reg2)
 	u8_Reset_Bit(reg1,*reg2);
 }
 
+void GB_CPU_CCF()
+{
+	GB_CPU_Reset_Flag_H();
+	GB_CPU_Reset_Flag_N();
 
+	(GB_CPU_Get_Flag_C() != 0) ? GB_CPU_Reset_Flag_C() : GB_CPU_Set_Flag_C();
+}
 
+void GB_CPU_SCF()
+{
+	GB_CPU_Reset_Flag_H();
+	GB_CPU_Reset_Flag_N();
+	GB_CPU_Set_Flag_C();
+}
+
+void GB_CPU_NOP()
+{
+	double penetration;
+	// Damn
+}
 

@@ -1,15 +1,20 @@
-#include"GBCpu_Opcodes.h"
+#include"GBCpu.h"
 
 void GB_CPU_OPCODE_0x00(void)
-{}	// Does nothing
+{
+}	// Does nothing
 
 void GB_CPU_OPCODE_0x01(void) // load 16bit value into
 {
-	
+	GB_Increment_PC(1);
+	u16 word_to_load = GB_Get_u16_PC();
+	GB_CPU_LD_16((u16*) GB_CPU_reg_BC,&word_to_load);
+	GB_Increment_PC(2);
 }
 
 void GB_CPU_OPCODE_0x02(void) // 8bit load A to (BC)
 {
+	GB_Increment_PC(1);
 	
 }
 
