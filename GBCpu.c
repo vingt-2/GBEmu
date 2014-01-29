@@ -1,4 +1,4 @@
-#include "GBCpu.h"
+#include "GBCpu_Opcodes.c"
 
 int main()
 {
@@ -46,17 +46,17 @@ void u16_Reset_Bit(u16* wordToReset, u8 bitNumber)
 u8 u8_Test_Bit(u8* wordToTest, u8 bitNumb)
 {
 	u8 test_mask = 0x01;
-	test_mask << bitNumb;
+	test_mask = test_mask << bitNumb;
 
-	return (*wordToTest & bitNumb);
+	return (*wordToTest & test_mask);
 }
 
 u16 u16_Test_Bit(u16* wordToTest, u8 bitNumb)
 {
 	u16 test_mask = 0x0001;
-	test_mask << bitNumb;
+	test_mask = test_mask << bitNumb;
 
-	return (*wordToTest & bitNumb);
+	return (*wordToTest & test_mask);
 }
 
 void GB_CPU_Set_All_Flags()
@@ -109,25 +109,25 @@ u16 GB_Get_u16_PC()
 */
 
 // 8bit-Load Commands
-void GB_CPU_LD_8(u8* from, u8* loadTo)
+void GB_CPU_LD_8(u8* loadTo, u8* from)
 {
 	*loadTo = *from;
 }
 
-void GB_CPU_LDI_8(u8* from, u8* loadTo)
+void GB_CPU_LDI_8(u8* loadTo, u8* from)
 {
 	*loadTo = *from;
-	*from++;
+	(*from)++;
 }
 
-void GB_CPU_LDD_8(u8* from, u8* loadTo)
+void GB_CPU_LDD_8(u8* loadTo, u8* from)
 {
 	*loadTo = *from;
-	*from--;
+	(*from)--;
 }
 
 // 16bit-load Commands
-void GB_CPU_LD_16(u16* from, u16* loadTo)
+void GB_CPU_LD_16(u16* loadTo, u16* from)
 {
 	*from = *loadTo;
 }
@@ -517,24 +517,24 @@ void GB_CPU_ADD_16(u16* reg)
 
 void GB_CPU_INC_16(u16* reg)
 {
-	*reg ++;
+	(*reg) ++;
 }
 
 void GB_CPU_DEC_16(u16* reg)
 {
-	*reg --;
+	(*reg) --;
 }
 
 void GB_CPU_ADD_TO_SP(u8* reg)
 {
-	u16 hl_content, add_value;
-
+	u16 add_value;
+    u8 	hl_content = *((u16*) GB_CPU_reg_HL);
+    
 	if( (*reg & 0x10) != 0x00 ) // negative u8 value in reg
 	{
 		// absolute value of the negative u8
 		u8 twos_complement = ~*reg + 0x01;
 
-		hl_content = *((u16*) GB_CPU_reg_HL);
 
 		// u16 converted negative
 		add_value =  ~((u16) twos_complement) + 0x0001;

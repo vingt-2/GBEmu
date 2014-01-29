@@ -85,12 +85,12 @@ u16 GB_Get_u16_PC();	// get immediate 16 bits value
 */
 
 // 8bit-Load Commands
-void GB_CPU_LD_8(u8* from,u8* loadTo);
+void GB_CPU_LD_8(u8* loadTo, u8* from);
 void GB_CPU_LDI_8(u8* reg1, u8* reg2);
 void GB_CPU_LDD_8(u8* reg1, u8* reg2);
 
 // 16bit-Load Commands
-void GB_CPU_LD_16(u16* from, u16* loadTo);
+void GB_CPU_LD_16(u16* loadTo, u16* from);
 void GB_CPU_PUSH_16(u16* reg);
 void GB_CPU_POP_16(u16* reg);
 
