@@ -316,9 +316,9 @@ DAA Decimal Adjust After Addition:
 
 void GB_CPU_DAA_8()
 {
-	u8 half_carry_flag 	= GB_CPU_Get_Flag_H();
-	u8 sub_op_flag 		= GB_CPU_Get_Flag_N();
-	u8 full_carry_flag	= GB_CPU_Get_Flag_C();
+	u8 half_carry_flag  = GB_CPU_Get_Flag_H();
+	u8 sub_op_flag      = GB_CPU_Get_Flag_N();
+	u8 full_carry_flag  = GB_CPU_Get_Flag_C();
 
 	u8 accu_content 	= GB_CPU_reg_AF[0];
 	u8 result 			= accu_content;
