@@ -1,6 +1,6 @@
 #include "GBCore.h"
 
-u8	GB_Get_Main_Memory(u16* address_reg)
+u8 GB_Get_Main_Memory(u16* address_reg)
 {
     return *(GB_main_memory + *(address_reg));
 }

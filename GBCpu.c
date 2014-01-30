@@ -91,21 +91,21 @@ void GB_Increment_PC(u16 offset)
 
 u8 GB_Get_u8_PC()
 {
-    extern u8* GB_main_memory;
-    
-    return (u8) *(GB_main_memory + GB_CPU_reg_PC);
+	extern u8* GB_main_memory;
+
+	return (u8) *(GB_main_memory + GB_CPU_reg_PC);
 }
 
 u16 GB_Get_u16_PC()
 {
-    extern u8* GB_main_memory;
-  
-     return (u16) *(GB_main_memory + GB_CPU_reg_PC);
+	extern u8* GB_main_memory;
+
+	return (u16) *(GB_main_memory + GB_CPU_reg_PC);
 }
 
 
 /*
-	GB CPU Instruction Set
+GB CPU Instruction Set
 */
 
 // 8bit-Load Commands
@@ -218,7 +218,7 @@ void GB_CPU_SUB_8(u8* reg)
 {
 	// Take reg2's value's two's complement
 	u8 negInt = ~(*reg) + 0x01;
-	
+
 	GB_CPU_ADD_8(&negInt);
 
 	GB_CPU_Set_Flag_N();
@@ -229,7 +229,7 @@ void GB_CPU_SBC_8(u8* reg)
 	if( (GB_CPU_reg_AF[1] & 0x10) != 0)
 	{
 		u8 negInt = ~(*reg) + 0x02;
-	
+
 		GB_CPU_ADD_8(&negInt);
 
 		GB_CPU_Set_Flag_N();
@@ -249,7 +249,7 @@ void GB_CPU_INC_8(u8* reg)
 	result = *reg  +  0x01;
 
 	carry = *reg ^ 0x01 ^ result;
-	
+
 	// Half carry test
 	if( (carry & 0x10) != 0x00)
 	{
@@ -270,9 +270,9 @@ void GB_CPU_DEC_8(u8* reg)
 	GB_CPU_Reset_All_Flags();
 
 	result = *reg  +  0xFF;	// 0xFF = twos complement value of -1
-	
+
 	carry = *reg ^ 0xFF ^ result;
-	
+
 	// Half carry test
 	if( (carry & 0x10) != 0x00)
 	{
@@ -389,7 +389,7 @@ void GB_CPU_DAA_8()
 			}
 			else
 			{
-					result += 0x66;
+				result += 0x66;
 			}
 			GB_CPU_Set_Flag_C();
 		}
@@ -528,8 +528,8 @@ void GB_CPU_DEC_16(u16* reg)
 void GB_CPU_ADD_TO_SP(u8* reg)
 {
 	u16 add_value;
-    u8 	hl_content = *((u16*) GB_CPU_reg_HL);
-    
+	u8 	hl_content = *((u16*) GB_CPU_reg_HL);
+
 	if( (*reg & 0x10) != 0x00 ) // negative u8 value in reg
 	{
 		// absolute value of the negative u8

@@ -1,8 +1,8 @@
 /*
-    GBCore: Is where the core functionality of The GB emulator reside,
-    
-    Analogy with the actual hardware would be a motherboard
- 
+GBCore: Is where the core functionality of The GB emulator reside,
+
+Analogy with the actual hardware would be a motherboard
+
 */
 #define GB_MAIN_MEMORY_SIZE 0xFFFF-1
 
@@ -20,10 +20,10 @@ typedef int64_t s64;
 
 typedef struct _GB_rom_descriptor
 {
-    char* rom_name;
-    int   rom_type;
-    int   rom_size;
-    char* rom_content;
+	char* rom_name;
+	int   rom_type;
+	int   rom_size;
+	char* rom_content;
 } GB_rom_descriptor;
 
 

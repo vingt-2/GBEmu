@@ -1,14 +1,14 @@
 /*
 
-    GBCpu: Here lies the Cpu interpreter. Command will be passed from memory
-    
-    To the Cpu interpreter to be translated into actual "portable" architecture dynamically.
- 
-    For info on supported commands see: z80 CPU documentation & 
-        http://gbdev.gg8.se/files/docs/mirrors/pandocs.html#cpucomparisionwithz80
+GBCpu: Here lies the Cpu interpreter. Command will be passed from memory
+
+To the Cpu interpreter to be translated into actual "portable" architecture dynamically.
+
+For info on supported commands see: z80 CPU documentation & 
+http://gbdev.gg8.se/files/docs/mirrors/pandocs.html#cpucomparisionwithz80
 
 */
- 
+
 #include "GBCore.h"
 
 
@@ -16,21 +16,21 @@
 extern u8* GB_main_memory;
 
 /*
-	Game boy Registers:
+Game boy Registers:
 */
 u8 GB_CPU_reg_AF[2];  
 /*
- The AF Register is very special,
- The High register is the accumulator, where operations are stored,
- 
- The Low register is used for flags
- The Flag Register (lower 8bit of AF register)
- Bit  Name  Set Clr  Expl.
- 7    zf    Z   NZ   Zero Flag
- 6    n     -   -    Add/Sub-Flag (BCD)
- 5    h     -   -    Half Carry Flag (BCD)
- 4    cy    C   NC   Carry Flag
- 3-0  -     -   -    Not used (always zero)
+The AF Register is very special,
+The High register is the accumulator, where operations are stored,
+
+The Low register is used for flags
+The Flag Register (lower 8bit of AF register)
+Bit  Name  Set Clr  Expl.
+7    zf    Z   NZ   Zero Flag
+6    n     -   -    Add/Sub-Flag (BCD)
+5    h     -   -    Half Carry Flag (BCD)
+4    cy    C   NC   Carry Flag
+3-0  -     -   -    Not used (always zero)
 */
 
 u8 GB_CPU_reg_BC[2];
@@ -78,10 +78,10 @@ u16 GB_Get_u16_PC();	// get immediate 16 bits value
 
 
 /*
-	Game Boy CPU Instruction Set !
+Game Boy CPU Instruction Set !
 
-	Thanks to this guy, it's all pretty much there:
-	http://nocash.emubase.de/pandocs.htm#cpuinstructionset
+Thanks to this guy, it's all pretty much there:
+http://nocash.emubase.de/pandocs.htm#cpuinstructionset
 */
 
 // 8bit-Load Commands
@@ -138,13 +138,13 @@ void GB_CPU_RES(u8* reg1,u8* reg2);
 
 //GMB CPU-Controlcommands
 /*
-  ccf            3F           4 -00c cy=cy xor 1
-  scf            37           4 -001 cy=1
-  nop            00           4 ---- no operation
-  halt           76         N*4 ---- halt until interrupt occurs (low power)
-  stop           10 00        ? ---- low power standby mode (VERY low power)
-  di             F3           4 ---- disable interrupts, IME=0
-  ei             FB           4 ---- enable interrupts, IME=1
+ccf            3F           4 -00c cy=cy xor 1
+scf            37           4 -001 cy=1
+nop            00           4 ---- no operation
+halt           76         N*4 ---- halt until interrupt occurs (low power)
+stop           10 00        ? ---- low power standby mode (VERY low power)
+di             F3           4 ---- disable interrupts, IME=0
+ei             FB           4 ---- enable interrupts, IME=1
 */
 void GB_CPU_CCF();
 void GB_CPU_SCF();
@@ -152,10 +152,10 @@ void GB_CPU_NOP();
 
 
 /*
-	Game Boy actual machine Opcodes: 
-	
-	Defines opcode for the CPU, Please refer to the Gameboy CPU documentation to
-	find the table of instructions related to those opcodes
+Game Boy actual machine Opcodes: 
+
+Defines opcode for the CPU, Please refer to the Gameboy CPU documentation to
+find the table of instructions related to those opcodes
 */
 
 void GB_CPU_OPCODE_0x00(void);
