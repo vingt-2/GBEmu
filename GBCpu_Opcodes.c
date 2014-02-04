@@ -1,6 +1,6 @@
 #include "GBCpu.h"
 
-void GB_CPU_OPCODE_0x00
+void GB_CPU_OPCODE_0x00()
 {
     GB_CPU_NOP();
 }
