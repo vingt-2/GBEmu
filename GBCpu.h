@@ -11,31 +11,35 @@ http://gbdev.gg8.se/files/docs/mirrors/pandocs.html#cpucomparisionwithz80
 
 #include "GBCore.h"
 
+// CPU state flags
+u8 cpu_wait_for_interrupt;
+u8 cpu_stop;
+u8 cpu_interrupt_mode;
 
-// Lets keep a link to the GB_main_memory
+
+// Keeps a link to GB_main_memory
 extern u8* GB_main_memory;
 
 /*
 Game boy Registers:
+ 
+ The AF Register is very special,
+ The High register is the accumulator, where operations are stored,
+ 
+ The Low register is used for flags
+ The Flag Register (lower 8bit of AF register)
+ Bit  Name  Set Clr  Expl.
+ 7    zf    Z   NZ   Zero Flag
+ 6    n     -   -    Add/Sub-Flag (BCD)
+ 5    h     -   -    Half Carry Flag (BCD)
+ 4    cy    C   NC   Carry Flag
+ 3-0  -     -   -    Not used (always zero)
 */
-u8 GB_CPU_reg_AF[2];  
-/*
-The AF Register is very special,
-The High register is the accumulator, where operations are stored,
-
-The Low register is used for flags
-The Flag Register (lower 8bit of AF register)
-Bit  Name  Set Clr  Expl.
-7    zf    Z   NZ   Zero Flag
-6    n     -   -    Add/Sub-Flag (BCD)
-5    h     -   -    Half Carry Flag (BCD)
-4    cy    C   NC   Carry Flag
-3-0  -     -   -    Not used (always zero)
-*/
-
+u8 GB_CPU_reg_AF[2];
 u8 GB_CPU_reg_BC[2];
 u8 GB_CPU_reg_DE[2];
 u8 GB_CPU_reg_HL[2];
+
 u16 GB_CPU_reg_SP; 	// Stack Pointer
 u16 GB_CPU_reg_PC; 	// Program Counter
 
@@ -75,6 +79,10 @@ void GB_Increment_PC(u16 offset);
 // Get immediate values from main memory at wherer the program Counter points
 u8 GB_Get_u8_PC();		// get immediate b8its value
 u16 GB_Get_u16_PC();	// get immediate 16 bits value
+
+
+
+
 
 
 /*
@@ -136,19 +144,33 @@ void GB_CPU_BIT(u8* reg1,u8* reg2);
 void GB_CPU_SET(u8* reg1,u8* reg2);
 void GB_CPU_RES(u8* reg1,u8* reg2);
 
-//GMB CPU-Controlcommands
-/*
-ccf            3F           4 -00c cy=cy xor 1
-scf            37           4 -001 cy=1
-nop            00           4 ---- no operation
-halt           76         N*4 ---- halt until interrupt occurs (low power)
-stop           10 00        ? ---- low power standby mode (VERY low power)
-di             F3           4 ---- disable interrupts, IME=0
-ei             FB           4 ---- enable interrupts, IME=1
-*/
+// CPU-Controlcommands
 void GB_CPU_CCF();
 void GB_CPU_SCF();
 void GB_CPU_NOP();
+void GB_CPU_Halt();
+void GB_CPU_Stop();
+void GB_CPU_DI();
+void GB_CPU_EI();
+
+/*
+   CPU Control flow operations
+ 
+ boolean_flag convention:
+ 0x01:c | 0x02:nc | 0x04:z | 0x08:nz
+*/
+
+u8 Helper_Flag_Test(u8 boolean_flag);
+void GB_CPU_Jump(u16* reg);
+void GB_CPU_Cond_Jump(u16* reg,u8 boolean_flag);
+void GB_CPU_Call(u16* reg);
+void GB_CPU_Cond_Call(u16* reg,u8 boolean_flag);
+void GB_CPU_Return();
+void GB_CPU_Cond_Return(u8 boolean_flag);
+
+
+
+
 
 
 /*

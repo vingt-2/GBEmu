@@ -1,11 +1,12 @@
 #include "GBCpu.h"
 
-void GB_CPU_OPCODE_0x00(void)
+void GB_CPU_OPCODE_0x00
 {
-}   // Does nothing
+    GB_CPU_NOP();
+}
 void GB_CPU_OPCODE_0x10()
 {
-    
+    GB_CPU_Stop();
 }
 void GB_CPU_OPCODE_0x20()
 {
@@ -17,19 +18,19 @@ void GB_CPU_OPCODE_0x30()
 }
 void GB_CPU_OPCODE_0x40()
 {
-    
+    GB_CPU_LD_8(GB_CPU_reg_BC, &(GB_CPU_reg_BC[0]));
 }
 void GB_CPU_OPCODE_0x50()
 {
-    
+    GB_CPU_LD_8(GB_CPU_reg_DE, &(GB_CPU_reg_BC[0]));
 }
 void GB_CPU_OPCODE_0x60()
 {
-    
+    GB_CPU_LD_8(GB_CPU_reg_HL, &(GB_CPU_reg_BC[0]));
 }
 void GB_CPU_OPCODE_0x70()
 {
-    
+    GB_Set_Main_Memory((u16*)GB_CPU_reg_HL,&(GB_CPU_reg_BC[0]));
 }
 void GB_CPU_OPCODE_0x80()
 {
@@ -37,23 +38,23 @@ void GB_CPU_OPCODE_0x80()
 }
 void GB_CPU_OPCODE_0x90()
 {
-     GB_CPU_SUB_8(GB_CPU_reg_BC);
+    GB_CPU_SUB_8(GB_CPU_reg_BC);
 }
 void GB_CPU_OPCODE_0xA0()
 {
-     GB_CPU_AND(GB_CPU_reg_BC);
+    GB_CPU_AND(GB_CPU_reg_BC);
 }
 void GB_CPU_OPCODE_0xB0()
 {
-     GB_CPU_OR(GB_CPU_reg_BC);
+    GB_CPU_OR(GB_CPU_reg_BC);
 }
 void GB_CPU_OPCODE_0xC0()
 {
-    
+    //Conditional return nz
 }
 void GB_CPU_OPCODE_0xD0()
 {
-    
+    //Conditional return nc
 }
 void GB_CPU_OPCODE_0xE0()
 {
@@ -63,7 +64,7 @@ void GB_CPU_OPCODE_0xF0()
 {
     
 }
-void GB_CPU_OPCODE_0x01(void) // load 16bit value into
+void GB_CPU_OPCODE_0x01
 {
     u16 word_to_load = GB_Get_u16_PC();
     GB_CPU_LD_16((u16*) GB_CPU_reg_BC,&word_to_load);
@@ -135,7 +136,7 @@ void GB_CPU_OPCODE_0xF1()
 {
     GB_CPU_POP_16((u16*)GB_CPU_reg_AF);
 }
-void GB_CPU_OPCODE_0x02(void) // 8bit load A to (BC)
+void GB_CPU_OPCODE_0x02()
 {
     GB_Set_Main_Memory((u16*)(GB_CPU_reg_BC), GB_CPU_reg_AF);
 }
@@ -185,19 +186,22 @@ void GB_CPU_OPCODE_0xB2()
 }
 void GB_CPU_OPCODE_0xC2()
 {
-    
+    //condtional jp nz
 }
 void GB_CPU_OPCODE_0xD2()
 {
-    
+    //conditional jp nc
 }
 void GB_CPU_OPCODE_0xE2()
 {
-    
+    u16 reg_location = 0xFF00 + ((u16) GB_CPU_reg_BC[1]);
+    GB_Set_Main_Memory(&reg_location, GB_CPU_reg_AF);
 }
 void GB_CPU_OPCODE_0xF2()
 {
-    
+    u16 reg_location = 0xFF00 + ((u16) GB_CPU_reg_BC[1]);
+    u8 memory_content = GB_Get_Main_Memory(&reg_location);
+    GB_CPU_LD_8(&(GB_CPU_reg_AF[0]),&memory_content);
 }
 void GB_CPU_OPCODE_0x03(void) // Increment BC
 {
@@ -431,11 +435,7 @@ void GB_CPU_OPCODE_0x66()
 }
 void GB_CPU_OPCODE_0x76()
 {
-    
-    /*
-     HHH    AAA LLL        TTT
-     HHH    AAA     LLL TTT
-     */
+    GB_CPU_Halt();
 }
 void GB_CPU_OPCODE_0x86()
 {

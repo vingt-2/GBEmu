@@ -46,7 +46,7 @@ void u16_Reset_Bit(u16* wordToReset, u8 bitNumber)
 u8 u8_Test_Bit(u8* wordToTest, u8 bitNumb)
 {
 	u8 test_mask = 0x01;
-	test_mask = test_mask << bitNumb;
+	test_mask = (test_mask << bitNumb);
 
 	return (*wordToTest & test_mask);
 }
@@ -54,7 +54,7 @@ u8 u8_Test_Bit(u8* wordToTest, u8 bitNumb)
 u16 u16_Test_Bit(u16* wordToTest, u8 bitNumb)
 {
 	u16 test_mask = 0x0001;
-	test_mask = test_mask << bitNumb;
+	test_mask = (test_mask << bitNumb);
 
 	return (*wordToTest & test_mask);
 }
@@ -117,13 +117,13 @@ void GB_CPU_LD_8(u8* loadTo, u8* from)
 void GB_CPU_LDI_8(u8* loadTo, u8* from)
 {
 	*loadTo = *from;
-	(*from)++;
+	*from = *from + 1;
 }
 
 void GB_CPU_LDD_8(u8* loadTo, u8* from)
 {
 	*loadTo = *from;
-	(*from)--;
+	*from = *from - 1;
 }
 
 // 16bit-load Commands
@@ -517,12 +517,12 @@ void GB_CPU_ADD_16(u16* reg)
 
 void GB_CPU_INC_16(u16* reg)
 {
-	(*reg) ++;
+	*reg = *reg + 0x0001;
 }
 
 void GB_CPU_DEC_16(u16* reg)
 {
-	(*reg) --;
+	*reg = *reg - 0x0001;
 }
 
 void GB_CPU_ADD_TO_SP(u8* reg)
@@ -534,7 +534,6 @@ void GB_CPU_ADD_TO_SP(u8* reg)
 	{
 		// absolute value of the negative u8
 		u8 twos_complement = ~*reg + 0x01;
-
 
 		// u16 converted negative
 		add_value =  ~((u16) twos_complement) + 0x0001;
@@ -719,7 +718,113 @@ void GB_CPU_SCF()
 
 void GB_CPU_NOP()
 {
-	double penetration;
-	// Damn
+    // No operation;
 }
 
+void GB_CPU_Halt()
+{
+    cpu_wait_for_interrupt = 0x01;
+}
+
+void GB_CPU_Stop()
+{
+    cpu_stop = 0x01;
+}
+
+void GB_CPU_DI()
+{
+    cpu_interrupt_mode = 0x00;
+}
+
+void GB_CPU_EI()
+{
+    cpu_interrupt_mode = 0x01;
+}
+
+void GB_CPU_Jump(u16* reg)
+{
+    GB_CPU_reg_PC = GB_CPU_reg_PC + *reg;
+}
+
+u8 Helper_Flag_Test(u8 boolean_flag)
+{
+    if(boolean_flag == 0x01)
+    {
+        return GB_CPU_Get_Flag_C();
+    }
+    else if(boolean_flag == 0x02)
+    {
+        return ~GB_CPU_Get_Flag_C();
+    }
+    else if(boolean_flag == 0x04)
+    {
+        return GB_CPU_Get_Flag_Z();
+    }
+    else if(boolean_flag == 0x08)
+    {
+        return ~GB_CPU_Get_Flag_Z();
+    }
+    else
+    {
+        return 0xFF;
+    }
+}
+
+void GB_CPU_Cond_Jump(u16* reg,u8 boolean_flag)
+{
+    u8 flag = Helper_Flag_Test(boolean_flag);
+    if(flag != 0xFF)
+    {
+        if(flag == 0x01)
+        {
+            GB_CPU_Jump(reg);
+        }
+    }
+    else
+    {
+        // A wild exception appears
+    }
+}
+
+void GB_CPU_Call(u16* reg)
+{
+    GB_CPU_PUSH_16(&GB_CPU_reg_PC);
+    GB_CPU_reg_PC = *reg;
+}
+
+void GB_CPU_Cond_Call(u16* reg, u8 boolean_flag)
+{
+    u8 flag = Helper_Flag_Test(boolean_flag);
+    if(flag != 0xFF)
+    {
+        if(flag == 0x01)
+        {
+            GB_CPU_Call(reg);
+        }
+    }
+    else
+    {
+        // A wild exception appears
+    }
+}
+
+void GB_CPU_Return()
+{
+    GB_CPU_POP_16(&GB_CPU_reg_PC);
+}
+
+void GB_CPU_Cond_Return(u8 boolean_flag)
+{
+    u8 flag = Helper_Flag_Test(boolean_flag);
+    if(flag != 0xFF)
+    {
+        if(flag == 0x01)
+        {
+            GB_CPU_Return();
+        }
+    }
+    else
+    {
+        // A wild exception appears
+    }
+}
