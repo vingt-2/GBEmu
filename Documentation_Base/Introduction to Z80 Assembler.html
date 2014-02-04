@@ -1,0 +1,860 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- saved from url=(0039)http://www.worldofspectrum.org/Z80.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Introduction to Z80 Assembler</title>
+  <meta name="author" content="James Hollidge">
+  <meta name="description" content="An introductory text into the basics of Z80 assembler">
+  
+  <script language="JavaScript" type="text/javascript">
+  <!-- Begin - break frames
+  if (window != top) top.location.href = location.href;
+  // End -->
+  </script>
+<style type="text/css"></style></head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(240, 240, 255);" link="#4040c0" vlink="#303080" alink="#f00000">
+<h1 style="font-family: arial;">Introduction to Z80
+Assembler</h1>
+<p style="font-family: arial; font-style: italic;">Written by James
+Hollidge</p>
+<h2 style="font-family: arial;">Foreword</h2>
+<p style="font-family: arial;">The Z80 is one of the most popular
+microprocessors of the 80's
+having been used in many home computers systems of that era. This
+document will give an introduction to all aspects of the Z80 assuming
+no knowledge of programming.</p>
+<p style="font-family: arial;">This guide is only intended as an
+introduction to the concepts and
+language of machine code and assembler - it doesn't give a complete
+examination of the instruction set nor does it attempt to deal with the
+particulars of any one Z80 system. However I will be covering that sort
+of stuff in my next Z80 article when I deal with the actual specific
+Spectrum stuff and some more of the instructions that are only useful
+in context.</p>
+<h2 style="font-family: arial;">Contents</h2>
+<ol style="font-family: arial;">
+  <li><a href="http://www.worldofspectrum.org/Z80.html#1">Binary vs Decimal vs Hexadecimal</a></li>
+  <li><a href="http://www.worldofspectrum.org/Z80.html#2">The Registers, Memory and Machine Language vs
+Assembler</a></li>
+  <li><a href="http://www.worldofspectrum.org/Z80.html#3">Addition and Subtraction</a></li>
+  <li><a href="http://www.worldofspectrum.org/Z80.html#4">Bit Manipulation</a></li>
+  <li><a href="http://www.worldofspectrum.org/Z80.html#5">Program Flow, more on Flags and The Stack</a></li>
+  <li><a href="http://www.worldofspectrum.org/Z80.html#6">Memory Manipulation</a></li>
+</ol>
+<a style="font-family: arial;" name="1"></a>
+<h3 style="font-family: arial;">1. Binary vs Decimal vs Hexadecimal <a href="http://www.worldofspectrum.org/Z80.html#top">^</a></h3>
+<p style="font-family: arial;">The way we count things in every day
+life is based on the number
+ten. This is an Arabic convention that has been widely adopted by the
+west. However it's not the only way of counting things. Ancient
+cultures have used systems based on 5, 12 and even 60. Computers use a
+counting system based on 2. Why? Quite simply it's for electronic
+simplicity - it is far easier to determine whether something is on (1)
+or off (0) (known as digital) than if it is at a range of voltages
+(known as analogue).</p>
+<p style="font-family: arial;">It's really very easy to work with
+binary. In decimal each extra
+digit represents numbers ten times greater than the last digit. For
+example take 55. The first 5 represents 5 tens, the second 5 represents
+5 ones. The first digit hence represents numbers ten times larger than
+the second. In 555 the first digit represents 5 hundreds, the second 5
+tens and the third 5 ones. The first digit represents numbers ten times
+bigger than the second, in turn ten times bigger than the third. The
+magnitude of the digits are 10x10x1, 10x1, 1. For thousands the
+magnitude of the digits is 10x10x10x1 and so on. Each extra digit is
+worth ten times more the last. Why do we work in these columns? Well
+when we get to 9 in one column then adding 1 will produce a number too
+large to represent (we can only represent 0,1,2,3,4,5,6,7,8 and 9).
+Unless we invent a symbol for each number we have to show the numbers
+larger than 9 in a different way. We do this by creating a column of
+digits that do this: the tens. Hence when we add 1 to 9 we write 10 to
+show there's one 10 and zero 1s.</p>
+<p style="font-family: arial;">Binary works in the same way except as
+we only have two digits we
+have to represent the 2's in a different way; by adding an extra
+column. For example when we add 1 to 1 we add an extra column of digits
+to represent the 2 leaving us with a number 10 in binary: One 2 and
+zero 1s. Each extra digit (or more correctly bit, for binary digit) we
+add
+represents numbers twice as large as the last bit. Hence:</p>
+<blockquote style="font-family: arial;">
+1=1, 1x2=2, 1x2x2=4, 1x2x2x2=8, 1x2x2x2x2=16 etc....
+</blockquote>
+<p style="font-family: arial;">The Z80 is an 8 bit system which means
+it uses 8 bits to represent
+its numbers, which look like this:</p>
+<blockquote style="font-family: arial;">76543210 - Bit Number<br>
+01001000 - Binary Number
+</blockquote>
+<p style="font-family: arial;">Now to convert this to decimal we take
+each bit that is set (1) and
+look at it's bit number (shown above the binary number), take 2 to the
+power of that number and add it to the total. (Taking a power of a
+number says take that number and multiply it by itself a number of
+times, 2 to the power of 2 (or 2^2) is the same as 2x2x1 or 4).</p>
+<blockquote style="font-family: arial;">2<sup>6</sup> (2x2x2x2x2x2x1 =
+64 ) + 2<sup>3</sup>
+(2x2x2x1 = 8 ) = 64 + 8 = 72</blockquote>
+<p style="font-family: arial;">The maximum value we can represent with
+8 bits is therefore 2<sup>0</sup> +
+2<sup>1</sup> + 2<sup>2</sup> + 2<sup>3</sup> + 2<sup>4</sup> + 2<sup>5</sup>
++ 2<sup>6</sup> + 2<sup>7</sup> = 255, practice your binary
+mathematics as it's going to be essential here.</p>
+<p style="font-family: arial;">Now alongside binary in computing we use
+hexadecimal, a number
+system based on 16. So this time each digit we write represents 16
+times the magnitude of the last digit. We use the letters A to F to
+represent the numbers 10 to 15 in decimal.</p>
+<p style="font-family: arial;">So a hexadecimal number like A5 would be
+10 x 16 + 6 in decimal or
+166. However hexadecimal is far more useful when converting binary
+because it just so happens that because 16 is a power of 2 (2<sup>4</sup>)
+that
+conversion between these number systems is very straightforward. All we
+need do is take each group of four bits in the number and replace them
+with the hexadecimal equivalent. Why does this work? Well each group of
+four bits can represent 16 different numbers and each hexadecimal digit
+can represent 16 different numbers. For example:</p>
+<blockquote style="font-family: arial;">76543210<br>
+11101101</blockquote>
+<p style="font-family: arial;">The first four bits (0-3) are 2<sup>3</sup>
++ 2<sup>2</sup>
++ 2<sup>0 </sup>= 13 which is D, the
+second four bits (4-7) are 2<sup>3</sup> + 2<sup>2</sup> + 2<sup>1</sup>
+= 14 which is E. Hence this
+number is ED in hexadecimal (and 14x16 + 13 = 237 in decimal).
+As you might see hexadecimal is very much more convenient for writing
+binary numbers down quickly without having to think too much about
+conversion as going back from hexadecimal is just as easy: you simply
+replace each digit with it's equivalent binary number. For example C9
+would become 12 and 9, or 1100 and 1001: 11001001 or 201. Hexadecimal
+makes working with binary a bit easier and converting to decimal a bit
+more straightforward. If you can, learn the first 16 binary numbers so
+you can convert quickly:</p>
+<table cellpadding="2" style="text-align: left; margin-left: auto; margin-right: auto; font-family: arial;" border="1">
+  <tbody>
+    <tr>
+      <td align="center">Binary</td>
+      <td align="center">Decimal</td>
+      <td align="center">Hexadecimal</td>
+    </tr>
+    <tr>
+      <td align="center">0000</td>
+      <td align="center">0</td>
+      <td align="center">0</td>
+    </tr>
+    <tr>
+      <td align="center">0001</td>
+      <td align="center">1</td>
+      <td align="center">1</td>
+    </tr>
+    <tr>
+      <td align="center">0010</td>
+      <td align="center">2</td>
+      <td align="center">2</td>
+    </tr>
+    <tr>
+      <td align="center">0011</td>
+      <td align="center">3</td>
+      <td align="center">3</td>
+    </tr>
+    <tr>
+      <td align="center">0100</td>
+      <td align="center">4</td>
+      <td align="center">4</td>
+    </tr>
+    <tr>
+      <td align="center">0101</td>
+      <td align="center">5</td>
+      <td align="center">5</td>
+    </tr>
+    <tr>
+      <td align="center">0110</td>
+      <td style="text-align: center;">6</td>
+      <td align="center">6</td>
+    </tr>
+    <tr>
+      <td align="center">0111</td>
+      <td align="center">7</td>
+      <td align="center">7</td>
+    </tr>
+    <tr>
+      <td align="center">1000</td>
+      <td align="center">8</td>
+      <td align="center">8</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;">1001</td>
+      <td align="center">9</td>
+      <td align="center">9</td>
+    </tr>
+    <tr>
+      <td align="center">1010</td>
+      <td align="center">10</td>
+      <td align="center">A</td>
+    </tr>
+    <tr>
+      <td align="center">1011</td>
+      <td align="center">11</td>
+      <td align="center">B</td>
+    </tr>
+    <tr>
+      <td align="center">1100</td>
+      <td align="center">12</td>
+      <td align="center">C</td>
+    </tr>
+    <tr>
+      <td align="center">1101</td>
+      <td align="center">13</td>
+      <td align="center">D</td>
+    </tr>
+    <tr>
+      <td align="center">1110</td>
+      <td align="center">14</td>
+      <td align="center">E</td>
+    </tr>
+    <tr>
+      <td align="center">1111</td>
+      <td align="center">15</td>
+      <td align="center">F</td>
+    </tr>
+  </tbody>
+</table>
+<p style="font-family: arial;">In this article b, d and h after a
+number represent binary, decimal
+and hexadecimal respectively, if there is any possibility of
+misinterpretation.</p>
+<a style="font-family: arial;" name="2"></a>
+<h3 style="font-family: arial;">2. The Registers, Memory and Machine
+Language vs Assembler <a href="http://www.worldofspectrum.org/Z80.html#top">^</a></h3>
+<p style="font-family: arial;">The Z80 stores its numbers and does all
+its maths (most of the
+time) using registers - these are a set of 8 bit numbers that are
+stored internally (actually it's a bit more complicated by we'll get to
+that in a bit).</p>
+<p style="font-family: arial;">At the moment we'll deal with the
+registers you're going to use
+pretty much all the time. They are A,B,C,D,E,F,H,L and
+A',B',C',D',E',F',H',L'.</p>
+<p style="font-family: arial;">Each register stores an 8 bit number
+(that's 0-255). A and F are
+special registers. A is known as the accumulator. It does most of the
+maths work. F is known as the flag register. It works a bit differently
+to other registers in that its purpose is to store the results of
+other operations depending on whether they are zero, negative, carry
+etc... but that'll be covered later. The registers B,C,D,E,H and L
+are a set of general purpose registers and can also be used in pairs to
+form 16 bit numbers (which can represent numbers up to 65535, test your
+binary understanding to figure out why). The valid pairs are BC, DE and
+HL.</p>
+<p style="font-family: arial;">The other registers are known as shadow
+registers, They can't be
+accessed directly but instead can be swapped around with the normal
+registers. They are incredibly useful for temporarily storing values.
+The way we load values into these registers is by way of the LD
+instruction, which is short for load. For example LD A,0 will load A
+with 0. LD BC,0 will load B and C with 0. LD A,B will load A with B and
+so on. There are many forms of LD but you can't do things like LD HL,BC
+- you just have to learn what is valid.</p>
+<p style="font-family: arial;">Now back to shadow registers. We access
+those using the exchange
+instructions. EXX will swap BC with B'C', DE with D'E' and HL with
+H'L'. EX AF,AF' will swap A with A' and F with F'. You won't see them
+for awhile but you should know about them.</p>
+<p style="font-family: arial;">In addition to those exchange
+instructions there are a few others,
+EX DE,HL will swap DE with HL. You'll see its uses later. The other
+instructions you need not know about for now.</p>
+<p style="font-family: arial;">Before we actually move on to assembler
+proper you should also know
+about machine language. Assembler is basically one step away from
+machine language. The Z80 gets instructions from the memory as numbers.
+Assembler is the English representation of these numbers. Machine
+language or machine code are the numbers represented by the assembler.
+So to clarify when we write an instruction LD A,0 the Z80 reads 3E 00.
+3E is the opcode or machine code and 00 is the operand, or the value
+that tells LD A,number what number to load. For the most part we don't
+need to concern ourselves with these numbers but for advanced code we
+can use the knowledge of these opcodes to manipulate the memory and
+actually alter the operation of a program by altering the opcodes
+stored!</p>
+<p style="font-family: arial;">Now for those of you wondering what
+memory is exactly it's best
+thought of as a huge storage area. It stores opcodes and data side by
+side. The Z80 doesn't understand the difference so you need to look
+after it and make sure you don't try to execute graphic data or display
+program code! The Z80 uses a 16bit register called PC, or program
+counter, to keep track of where it's getting instructions from. As 16
+bit numbers can represent 65536 different numbers the Z80 can access
+65536 different memory locations to execute code. Each memory location
+stores an 8 bit number or byte, giving 65536 bytes of memory or 64
+kilobytes (a kilobyte being 1024 bytes) or 64kb. You'll see more about
+PC later but for now all you need to understand is that memory stores
+all the information the Z80 can use and it's where we place
+instructions and data so we can make a computer useful!</p>
+<a style="font-family: arial;" name="3"></a>
+<h3 style="font-family: arial;">3. Addition and Subtraction <a href="http://www.worldofspectrum.org/Z80.html#top">^</a></h3>
+<p style="font-family: arial;">Now we are actually getting somewhere.
+Addition and subtraction are
+the most basic mathematical tools available to the Z80 and you'll
+probably use them a lot.</p>
+<p style="font-family: arial;">Addition in binary works the same way as
+in decimal. We add the
+ones, twos, fours etc... together and write down the result for each
+column, carrying to the next if it's too large. For example:
+</p>
+<table style="font-family: arial;">
+  <tbody>
+    <tr>
+      <td colspan="2" align="right">00000110</td>
+      <td><br>
+      </td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td colspan="2" align="right"><u>00000011</u></td>
+      <td>+</td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td colspan="2" align="right">00001001</td>
+      <td>Result</td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td>0</td>
+      <td align="right">00001100</td>
+      <td>Carry</td>
+    </tr>
+    <tr>
+    </tr>
+  </tbody>
+</table>
+<p style="font-family: arial;">The carry is treated as a third number
+to add. If the result of the
+addition of one column of bits is too large to fit into one column
+(i.e.
+if both bits are 1) then we place a 1 in the carry in the next column
+and include that in the next addition. The carry usually starts with a
+zero in the first (rightmost) column.</p>
+<p style="font-family: arial;">Now what if we add up two values with a
+result greater than 255?</p>
+<table style="font-family: arial;">
+  <tbody>
+    <tr>
+      <td colspan="2" align="right">11111111</td>
+      <td><br>
+      </td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td colspan="2" align="right"><u>11111111</u></td>
+      <td>+</td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td colspan="2" align="right">11111110</td>
+      <td>Result</td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td align="right">11111110</td>
+      <td>Carry</td>
+    </tr>
+    <tr>
+    </tr>
+  </tbody>
+</table>
+<p style="font-family: arial;">Or 255+255 = 254?!? No, in fact we use
+the F register to store the
+extra carry in one of its bits, strangely enough called the CARRY bit,
+or flag. The CARRY bit in essence represents 256, making the result of
+the addition 510. There's more on the carry flag later.</p>
+<p style="font-family: arial;">Now, when we do subtraction we do things
+in a slightly different
+way. The way negative numbers are represented is though a system called
+'twos complement'. The reason it is called a complement is that we
+represent negative numbers by inverting each bit of a positive number.
+It's twos complement because we then add one to this inversion (ones
+complement). Why twos complement? Well, it's quite simple really.</p>
+<p style="font-family: arial;">Inverting all the bits to form ones
+complement seems a reasonable
+way to represent negative numbers, if we have 00001011, or 11, -11 is
+simply 11110100. Obviously this means numbers above 127 will be
+negative (01111111 is 127, thus -127 is 10000000, or 128 in positive
+representations). However look at zero. If we invert the bits in zero
+we get 11111111 for -0! As there is no positive or negative sense for
+zero clearly we have a problem here. We get around this in twos
+complement by adding 1. 11111111 + 1 = 0 plus a carry out - which we
+ignore. 00001011 will now be 11110100 + 1, or 11110101. We now have a
+range from -128, 10000000, to +127 01111111. The leftmost (or most
+significant bit) thus determines whether or not the number is negative
+or positive.</p>
+<p style="font-family: arial;">Twos complement also makes subtraction
+easy - as adding two numbers
+represented in twos complement together will always give the right
+result. For example, 11111111 + 00000001 (-1 + 1), which we've already
+seen equals zero as expected. In ones complement we'd have 11111110 +
+00000001 - which is 11111111 and still right as we have two zeros. If
+we went on to add 1 twos complement would give us the correct answer
+but ones complement would not. - it would remain zero - positive zero!
+The Z80 cannot know whether or not a number is positive or signed in
+this system and handle the two zeros correctly for subsequent
+instructions.</p>
+<p style="font-family: arial;">Hence due to the fact ones complement
+has two zeros and would make
+the Z80 work harder we use twos complement to perform subtraction -
+always treating both numbers as twos complement.</p>
+<p style="font-family: arial;">Here we can do 100 - 10 by adding 100
+and 10 in twos complement.</p>
+<table style="font-family: arial;">
+  <tbody>
+    <tr>
+      <td colspan="2" align="right"> 01100100</td>
+      <td>100</td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td colspan="2" align="right"><u>11110110</u></td>
+      <td>+ -10</td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td colspan="2" align="right"> 01011010</td>
+      <td>Result 90</td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td align="right"> 11001000</td>
+      <td>Carry</td>
+    </tr>
+    <tr>
+    </tr>
+  </tbody>
+</table>
+<p style="font-family: arial;">What about something like 255 - 128?
+-128 doesn't have a positive
+representation in twos complement. Well the Z80 doesn't make the
+distinction between twos complement and unsigned numbers so what we're
+actually doing is -1 + 128 which is still 127. So when adding 255 + 128
+this is also -1 + 128 and again gives us 127. So 128 is treated as both
+positive and negative at the same time - it's the context with which
+you use it that gives it a sign.</p>
+<p style="font-family: arial;">In essence don't worry about the way the
+Z80 actually performs the
+operation - (you won't get the carry working as it does here with
+subtraction for example) - it'll always give the correct answer when
+subtracting or adding. What you as a programmer need to worry about is
+whether or not you treat the number as signed or unsigned.
+</p>
+<p style="font-family: arial;"> There are four flags which will help
+you working with addition and
+subtraction operations:</p>
+<ul style="font-family: arial;">
+  <li>The carry flag you have met. It will be set if an addition has a
+result greater than 255 or a subtraction has a result less than 0.</li>
+  <li>The sign flag will be set if an operation on a register leaves a
+negative result (i.e. bit 7 is set).</li>
+  <li>The parity/overflow flag - which has two uses; the parity part
+we'll see later. In dealing with addition and subtraction an overflow
+occurs if an operation causes a result larger than can be represented
+in twos complement, i.e. something less than -128 or more than 127. So
+127 + 1 or -128 - 1 would both cause overflows.</li>
+  <li>Finally there is the zero flag which is set if an operation
+results in a zero result - no surprises there.</li>
+</ul>
+<p style="font-family: arial;">Along with carry flag these flags are
+helpful in dealing with the
+results of operations as will be seen later.</p>
+<p style="font-family: arial;">The instructions for carrying out these
+operations are ADD and SUB,
+no prizes for guessing what they do. For example:</p>
+<blockquote style="font-family: arial;"><code>
+LD A,23<br>
+LD B,100<br>
+LD C,53<br>
+ADD A,B<br>
+SUB C</code>
+</blockquote>
+<p style="font-family: arial;">Would leave A with 70, sign unset, carry
+.</p>
+<p style="font-family: arial;">ADD A, can work with any of the normal
+registers (excluding F of
+course) or an 8 bit number, so ADD A,D or ADD A,65 are fine. ADD A,HL
+or ADD A,1000 are invalid.</p>
+<p style="font-family: arial;">SUB works in pretty much the same way,
+with any of the normal
+registers or an 8 bit number but not with pairs or numbers larger than
+255.</p>
+<p style="font-family: arial;">However, ADD can also work with register
+pairs. There are three ADD
+HL, instructions that work with BC,DE or HL. SUB cannot do this
+however, it's always A take away another number and hence the reason
+why A is not mentioned in the SUB C operation in the above example.
+Note that when adding register pairs if carry is set it will represent
+65536 (use your understanding of binary to figure out why).</p>
+<p style="font-family: arial;">As seen above these operations can often
+produce a result that leads
+to carry being set. In this case there are two further instructions
+that take heed of this, ADC and SBC, or add with carry and subtract
+with carry.</p>
+<p style="font-family: arial;">ADC will treat the carry as 1, hence if
+carry is set ADC A,0 will
+actually add 1, not 0. SBC works again in basically the same way,
+treating carry as 1. So SBC A,0 with carry set will subtract 1. Notice
+that SBC is written with A, like ADD and ADC.</p>
+<p style="font-family: arial;">This is because SBC has some 16 bit
+subtraction instructions: SBC
+HL, and any valid register pair. Remember EX DE,HL? Well say instead of
+HL-DE you want to do DE-HL. Using EX DE,HL SBC HL,DE EX DE,HL will
+achieve this. Very useful.</p>
+<p style="font-family: arial;">There's one final subtraction
+instruction you should know about,
+NEG. NEG is short for negate and performs 0-A. In effect it will
+convert twos complement number from positive to negative. For example
+if A is 1 NEG will be FF, or -1. If A is FF NEG will be 1 or +1.
+Remember however that NEG -128 will be -128 still.<br>
+</p>
+<p style="font-family: arial;">There are two final instructions for
+addition and subtraction which
+are very useful indeed. They are INC and DEC and stand for increment
+and decrement. These basically add 1 or take away 1. You'll find
+yourself using them all the time as they are much more convenient than
+the above instructions. They work on any valid register pair or single
+register. Both instructions completely ignore the carry flag and won't
+affect it at all. When you get to 255 or 65535 and increment you get
+zero, if you're at zero and decrement you get 255 or 65535. Carry plays
+no part at all.</p>
+<a style="font-family: arial;" name="4"></a>
+<h3 style="font-family: arial;">4. Bit Manipulation <a href="http://www.worldofspectrum.org/Z80.html#top">^</a></h3>
+<p style="font-family: arial;">Beyond addition and subtraction there
+are numerous other ways in
+which you can affect registers. They are called bitwise instruction
+because they work at the level of bits.</p>
+<p style="font-family: arial;">AND is short for, erm, and and works by
+comparing each bit and
+setting the result bit to 1 if they are both 1. For example:</p>
+<blockquote style="font-family: arial;">11000011 AND 10011001 = 10000001</blockquote>
+<p style="font-family: arial;">OR is short for, well or, and works in a
+similar way to AND but will
+set the result but to 1 if either bit being compared is 1. For example:</p>
+<blockquote style="font-family: arial;">11000011 OR 10011001 = 11011011</blockquote>
+<p style="font-family: arial;">XOR is short for exclusive or and works
+a bit like OR and a bit like
+AND. It will set the result bit to 1 if either bit being compared is 1
+but *NOT* if both bits are 1. For example:</p>
+<blockquote style="font-family: arial;">11000011 XOR 10011001 = 01011010</blockquote>
+<p style="font-family: arial;">AND, OR and XOR all work on A and either
+a number or a single
+register, XOR B or AND 45 for example. Note that XOR A will set A to 0
+and is a very useful optimization (try to figure out why).</p>
+<p style="font-family: arial;">CPL is short for complement and
+basically inverts each bit, so a 1
+is 0 and a 0 is 1. For example:</p>
+<blockquote style="font-family: arial;">CPL 10010010 = 01101101</blockquote>
+<p style="font-family: arial;">CPL only works on A and hence takes no
+operand. XOR FF is equivalent
+to CPL, can you see why?</p>
+<p style="font-family: arial;">The next set of instructions all work by
+shifting and rotating bits
+rather than comparing them.</p>
+<p style="font-family: arial;">The rotation group works by moving all
+the bits either left or right
+and then moving the leftmost or rightmost bit to the beginning or to
+the carry and the carry or the rightmost or leftmost bit to the end. So
+starting from:</p>
+<ul style="font-family: arial;">
+  <table>
+    <tbody>
+      <tr>
+        <td>Register</td>
+        <td>C</td>
+      </tr>
+      <tr>
+        <td>10000001</td>
+        <td>0</td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <li>with RL (rotate left with carry)</li>
+  <p>00000010 1</p>
+  <li>with RR (rotate right with carry)</li>
+  <p>01000000 1</p>
+  <li>with RLC (rotate left without carry)</li>
+  <p>00000011 0</p>
+  <li>with RRC (rotate right without carry)</li>
+  <p>11000000 0</p>
+</ul>
+<p style="font-family: arial;">Can you see why RL and RR nine times and
+RLC and RRC eight times
+returns the register to its initial value? These instructions take any
+normal single register. There are also some special instructions
+involving the A register only. They are RLA, RRA, RRCA and RLCA. Note
+the lack of a space is important - these are different to RL A, RR A,
+RRC A and RLC A but work very similarly. The difference in these
+instructions is that they only affect the carry flag. There is another
+flag called the parity/overflow flag which will be explained after the
+shift instructions.</p>
+<p style="font-family: arial;">The shift instructions work in a very
+similar way, either shifting
+bits right or left. SLA, or shift left arithmetic, will shift each bit
+left with the leftmost bit being moved into the carry but the rightmost
+bit is *always* reset to zero. In effect it will multiply by two. (Why?
+Well adding a zero in decimal to the end of the number makes it ten
+times bigger, here we're basically doing the same thing with the carry
+representing 256 and hence adding a zero here makes it twice as big).</p>
+<p style="font-family: arial;">Now there are two right shifting
+instructions that have one subtle
+difference. SRL, or shift right logical, will do much the opposite of
+SLA, but with the leftmost bit being set to zero and the rightmost
+being moved into the carry. SRA, or shift right arithmetic on the other
+hand will leave the leftmost bit unchanged. So if it was one it remains
+one and if it was zero it remains zero. This is because SRA treats the
+number as being signed, and hence leaves bit 7 alone as it signifies
+the signing. All three instructions work on any single register but
+don't have any special instruction for A or excluding carry.</p>
+<p style="font-family: arial;">Right, back to flags. These instructions
+have a special use for the
+parity/overflow flag (or PV). Basically if the result of the
+instruction leaves a register with an even number of bits the parity is
+even, and if it's left with an odd number of bits the parity is odd.
+You'll see in the next topic how we can use PE (parity even) and PO
+(parity odd).
+</p>
+<p style="font-family: arial;">The final group of instructions are the
+SET, RES and BIT
+instructions. These take the form bit,register and will SET, RESet or
+test the BIT of the register in question. For example SET 4,D will make
+bit 4 of D 1, RES 0,H will make bit 0 of H 0 and BIT 7,C will test bit
+7 of C and set the zero flag depending on the result.</p>
+<a style="font-family: arial;" name="5"></a>
+<h3 style="font-family: arial;">5 Program Flow, more on Flags and The
+Stack <a href="http://www.worldofspectrum.org/Z80.html#top">^</a></h3>
+<p style="font-family: arial;">What is program flow? Essentially it
+refers to the way we navigate a
+program's instructions. So far you've only see things move linearly:
+that is to say when you execute one instruction you move onto the next
+in memory straight after it and any operands. As you've heard PC keeps
+track of where code is being fetched from the memory. For every
+instruction and operand fetched from memory PC is incremented by one.
+However why should PC always being moving forward? If we change it
+completely we could move to an entirely different part of memory to
+execute instructions. Why we would want to do this and how we do this
+are covered here.
+Firstly: why? Well we've been talking a lot about flags but so far only
+carry has been of any use. However say you want to execute one bit of
+code depending on whether or not A-B is zero and another if it isn't it
+might look like this:</p>
+<blockquote style="font-family: arial;"><code>SUB B<br>
+JP Z,somewhere<br>
+JP NZ,elsewhere</code></blockquote>
+<p style="font-family: arial;">JP is short for jump. It basically reads
+two bytes of information
+and sets PC to them. You could think of it as LD PC,xxxxh. JP Z is a
+conditional jump, and this is where flags start to make more sense. JP
+Z will only jump is the zero flag is set. That is to say IF Z=1 LD
+PC,xxxxh. JP NZ is another conditional jump but will only jump if the
+zero flag isn't set. Can you see now why the above program does what
+it's supposed to? Conditions form the backbone of most programs -
+you'll find it next to impossible to make useful programs without them.
+The conditions we can use with JP are:</p>
+<blockquote style="font-family: arial;"><code>Z, jump if the zero flag
+is set.<br>
+NZ, jump if the zero flag is reset.<br>
+C, jump if the carry flag is set.<br>
+NC, jump if the carry flag is reset.<br>
+PO, jump if parity odd or there's no overflow.<br>
+PE, jump if parity even or there's an overflow.<br>
+P, jump if positive.<br>
+M, jump if negative.</code></blockquote>
+<p style="font-family: arial;">Let's look at PO, PE and P and M a bit
+more closely. As you already
+know 00 to 7F can represent positive numbers and 80 to FF can represent
+negative numbers. P and M work with this convention as you might expect
+- using the sign flag - depending on whetherr the result of an operation
+if positive or negative using this convention. PO and PE have two uses.
+As outlined with the shift and rotate instructions they stand for
+parity even and parity odd. However the flag is called the
+parity/overflow flag and it also detects something called an overflow.
+What is an overflow? Well as stated in chapter 3 if the result of an
+operation in two's complement produces a result that's signed
+incorrectly then there's an overflow. For example 127+127 is 254, but
+in twos complement 254 is -2. Two positive numbers added together don't
+form a negative so there's an overflow.</p>
+<p style="font-family: arial;">Now along side JP is the CALL
+instruction that works in a very
+similar way. The CALL instruction also takes the conditions outlined
+above but it will first store a copy of the current PC value in a
+special place called the stack. Why does it do this and what is the
+stack?</p>
+<p style="font-family: arial;">Well the stack is a section of memory
+where registers can be stored
+temporarily. Think of it like a bit spike where you can shove bits of
+paper on and take bits of paper off but only ever work with the top of
+the spike. The Z80 uses a 16 bit register called SP, or the stack
+pointer, to point to the stack. Two instructions are then used to
+manipulate the stack. They are PUSH and POP.</p>
+<p style="font-family: arial;">PUSH does what you might expect, it
+PUSHes a register pair onto the
+stack. That's BC,DE,HL and AF. AF? Yes, in this case AF is treated as a
+register pair. Only pairs may be used with the stack (which in the case
+of AF is one way of manipulating the F register indirectly). Once
+pushed onto
+the stack the stack pointer is decremented twice to point to the next
+bit of memory where the next item will be pushed on. It decrements SP
+as the stack works backwards, starting high and getting lower with the
+more items on the stack. In essence the spike is stuck to the ceiling!</p>
+<p style="font-family: arial;">POP does the opposite, and POPs a
+register pair off the stack and
+increments SP twice. Note that it doesn't have to be the same register
+pair at all, which can be useful for swapping register values around in
+pairs.<br>
+</p>
+<p style="font-family: arial;">So our CALL instruction is effectively
+PUSH PC. So what's POP PC?</p>
+<p style="font-family: arial;">RET is. RET is POP PC essentially. It
+can also use the same
+conditions as CALL and JP. So using CALL and RET you can CALL a
+subroutine and then use RET at the end of it to get back to where you
+were. Trust me, this is incredibly useful.
+I should also note at this point that you can LD SP,HL, ADD HL,SP, ADC
+HL,SP, SBC HL,SP, INC SP and DEC SP. There are other instructions with
+SP but I'll wait another time to detail all the instructions and their
+various iterations.</p>
+<p style="font-family: arial;">Finally there is the JR instruction. JR
+is short for jump relative
+as doesn't LD PC,xxxxh, no, it's more of a ADD +/-xxh,PC. That is to
+say using two's complement PC is moved up to 127 bytes forward or 128
+bytes back. The advantage of JR is that it's one byte shorter than JP.
+The disadvantage is that only Z,NZ,C,NC can be used as conditions.</p>
+<p style="font-family: arial;">Now on a different note is the CP
+instruction, compare. It works
+basically by doing a subtraction without subtracting anything. So CP B
+is A-B but it doesn't affect A. So what's the use of it? Well what it
+will do is set the flags according to the result of A-B. So if A-B is
+zero the zero flag is set, if B is greater than A then carry is set and
+so on. CP can be used with any single register or a number.</p>
+<a style="font-family: arial;" name="6"></a>
+<h3 style="font-family: arial;">6 Memory Manipulation <a href="http://www.worldofspectrum.org/Z80.html#top">^</a></h3>
+<p style="font-family: arial;">The final part of our introduction to
+Z80 deals with the memory.
+We've already been manipulating the memory using POP and PUSH and CALL
+and RET, but this section covers the major tools.</p>
+<p style="font-family: arial;">Firstly our old friend LD. We use
+brackets to signify that instead
+of being a number or register we actually mean the contents of the
+memory at that address. For example LD A,(ABCD) loads A with the memory
+at ABCD, not with ABCD itself (it wouldn't fit anyway would it?). LD
+A,(HL) will load A with the contents at memory address HL, not with HL
+itself. We can also load memory with registers, LD (HL),A and LD
+(ABCD),A for example. We can also load a memory address with HL, a two
+byte number, or HL with a memory address of two bytes, a bit like using
+a stack at HL.</p>
+<p style="font-family: arial;">There are also a set of instructions
+called the block shift
+instructions because they are designed to move chunks of memory around
+and block search because they are designed to search through chunks of
+memory.</p>
+<p style="font-family: arial;">The block shift instructions start with
+LD, like load. Then then
+take either I or D, standing for increment and decrement, and then a R
+for repeat. So we have LDI, LDD, LDIR and LDDR. How do they work?</p>
+<p style="font-family: arial;">Well each instruction uses BC, DE and
+HL. BC is a counter, DE is the
+target, HL is the source. Each command works in a similar way, they'll
+load the memory at DE with the memory at HL (hence target and source).</p>
+<p style="font-family: arial;">LDD will then decrement BC,DE and HL. It
+will then set the PV flag
+to zero, or parity odd, if BC is zero. It leaves the other flags
+unaffected though. LDDR works in much the same way but will continue
+working until BC is zero.
+LDI and LDIR are basically the same. However DE and HL are incremented
+instead of decremented.</p>
+<p style="font-family: arial;">Here's an example of block shift:</p>
+<blockquote style="font-family: arial;"><code>LD DE,0000h<br>
+LD HL,4000h<br>
+LD BC,0100h<br>
+LDIR</code></blockquote>
+<p style="font-family: arial;">Can you see how this works? Basically
+100h bytes of data starting at
+4000h are copied to 0000h through to 0100h. Block shift is useful in a
+text editor for example. You might want to delete a character and then
+shift everything else down in memory. Block shift will do that quickly
+and easily. You can think of it as a copy instruction.</p>
+<p style="font-family: arial;">Now block search is basically a CP with,
+I or D and R tacked onto
+the end. It works by comparing A with the memory at HL, then setting PV
+if the result is zero, leaving the other flags alone. CPI increments
+HL, CPD decrements HL and the both decrement BC. CPIR and CPDR repeat
+until BC is zero (and the zero flag is set) or PV is set. So BC is
+again a counter, HL is the source and A is the testing number.</p>
+<p style="font-family: arial;">So say you want to find the first
+occurrence of 124 in the valid
+memory space:</p>
+<blockquote style="font-family: arial;"><code>LD HL,0000h<br>
+LD BC,0000h<br>
+LD A,124<br>
+CPIR</code></blockquote>
+<p style="font-family: arial;">Note if you used CPDR it would find the
+last occurrence of 124 in
+the valid memory space. Can you figure out why?<br>
+</p>
+<p style="text-align: center; font-family: arial;"><img src="./Introduction to Z80 Assembler_files/zx-hline.gif" width="540" height="8" alt=""></p>
+<h3 style="font-family: arial;">Contacts<br>
+</h3>
+<p style="font-family: arial;">If you have any questions about this
+document you can email me at<br>
+</p>
+<blockquote style="font-family: arial;">
+  <p>cyborg@planetduke.com</p>
+</blockquote>
+<p style="font-family: arial;">or contact me by instant message:<br>
+</p>
+<blockquote style="font-family: arial;">
+  <table cellpadding="2" cellspacing="2" border="0" style="text-align: left;">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;">ICQ</td>
+        <td style="vertical-align: top;">41413751</td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">AIM</td>
+        <td style="vertical-align: top;">thecyborgjim</td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">YIM</td>
+        <td style="vertical-align: top;">cyborg_jim</td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top;">MSN</td>
+        <td style="vertical-align: top;">cyborg@planetduke.com</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="text-align: center; font-family: arial;"><img alt="" height="8" width="540" src="./Introduction to Z80 Assembler_files/zx-hline.gif"></p>
+</blockquote>
+<!-- WOS Stuff -->
+<center style="font-family: arial;">
+<table cellpadding="5">
+  <tbody>
+    <tr>
+      <td><a href="http://www.worldofspectrum.org/email.html"><img src="./Introduction to Z80 Assembler_files/m-mail.gif" width="80" height="40" border="0" alt="[Mail]"></a> </td>
+      <td><a href="http://www.worldofspectrum.org/index.html"><img src="./Introduction to Z80 Assembler_files/m-index.gif" width="80" height="40" border="0" alt="[Index]"></a> </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+
+
+</body></html>
