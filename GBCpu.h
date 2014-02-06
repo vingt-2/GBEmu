@@ -46,8 +46,8 @@ u8 GB_CPU_reg_BC[2];
 u8 GB_CPU_reg_DE[2];
 u8 GB_CPU_reg_HL[2];
 
-u16 GB_CPU_reg_SP; 	// Stack Pointer
-u16 GB_CPU_reg_PC; 	// Program Counter
+u16 GB_CPU_reg_SP;  // Stack Pointer
+u16 GB_CPU_reg_PC;  // Program Counter
 
 void u8_Set_Bit(u8* wordToSet, u8 bitNumb);
 void u16_Set_Bit(u16* wordToSet, u8 bitNumb);
@@ -94,8 +94,8 @@ u8 GB_CPU_Process(u8 opcode);
 void GB_Increment_PC(u16 offset);
 
 // Get immediate values from main memory at wherer the program Counter points
-u8 GB_Get_u8_PC();		// get immediate b8its value
-u16 GB_Get_u16_PC();	// get immediate 16 bits value
+u8 GB_Get_u8_PC();   // get immediate b8its value
+u16 GB_Get_u16_PC(); // get immediate 16 bits value
 
 
 
@@ -176,6 +176,10 @@ void GB_CPU_Call(u16* reg);
 void GB_CPU_Cond_Call(u16* reg,u8 boolean_flag);
 void GB_CPU_Return();
 void GB_CPU_Cond_Return(u8 boolean_flag);
+
+
+// GB EXCEPTION OPCODE !
+void GB_CPU_Invalid_Opcode();
 
 
 

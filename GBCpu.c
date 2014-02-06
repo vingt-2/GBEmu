@@ -850,3 +850,8 @@ void GB_CPU_Cond_Return(u8 boolean_flag)
         // A wild exception appears
     }
 }
+
+void GB_CPU_Invalid_Opcode()
+{
+	// A wild exception appears
+}

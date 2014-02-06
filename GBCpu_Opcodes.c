@@ -262,15 +262,15 @@ void GB_CPU_OPCODE_0xC3()
 }
 void GB_CPU_OPCODE_0xD3()
 {
-    
+    GB_CPU_Invalid_Opcode();  
 }
 void GB_CPU_OPCODE_0xE3()
 {
-    
+    GB_CPU_Invalid_Opcode();
 }
 void GB_CPU_OPCODE_0xF3()
 {
-    
+    GB_CPU_DI();
 }
 void GB_CPU_OPCODE_0x04()
 {
@@ -332,11 +332,11 @@ void GB_CPU_OPCODE_0xD4()
 }
 void GB_CPU_OPCODE_0xE4()
 {
-    // SIGNAL FAULT
+    GB_CPU_Invalid_Opcode();
 }
 void GB_CPU_OPCODE_0xF4()
 {
-    // SIGNAL FAULT
+    GB_CPU_Invalid_Opcode();
 }
 void GB_CPU_OPCODE_0x05()
 {
@@ -804,15 +804,19 @@ void GB_CPU_OPCODE_0xBB()
 }
 void GB_CPU_OPCODE_0xCB()
 {
-    
+    //
+
+    //   PREFIX CB
+
+    //
 }
 void GB_CPU_OPCODE_0xDB()
 {
-    // SIGNAL FAULT
+    GB_CPU_Invalid_Opcode();
 }
 void GB_CPU_OPCODE_0xEB()
 {
-    // SIGNAL FAULT
+    GB_CPU_Invalid_Opcode();
 }
 void GB_CPU_OPCODE_0xFB()
 {
@@ -878,11 +882,11 @@ void GB_CPU_OPCODE_0xDC()
 }
 void GB_CPU_OPCODE_0xEC()
 {
-    // SIGNAL FAULT
+    GB_CPU_Invalid_Opcode();
 }
 void GB_CPU_OPCODE_0xFC()
 {
-    // SIGNAL FAULT   
+    GB_CPU_Invalid_Opcode(); 
 }
 void GB_CPU_OPCODE_0x0D()
 {
@@ -934,19 +938,20 @@ void GB_CPU_OPCODE_0xBD()
 }
 void GB_CPU_OPCODE_0xCD()
 {
-    
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Call(&new_address);   
 }
 void GB_CPU_OPCODE_0xDD()
 {
-    
+    GB_CPU_Invalid_Opcode();
 }
 void GB_CPU_OPCODE_0xED()
 {
-    
+    GB_CPU_Invalid_Opcode();
 }
 void GB_CPU_OPCODE_0xFD()
 {
-    
+    GB_CPU_Invalid_Opcode();
 }
 void GB_CPU_OPCODE_0x0E()
 {
@@ -1022,19 +1027,19 @@ void GB_CPU_OPCODE_0xFE()
 }
 void GB_CPU_OPCODE_0x0F()
 {
-    
+    GB_CPU_RRC_Accu();
 }
 void GB_CPU_OPCODE_0x1F()
 {
-    
+    GB_CPU_RRA();
 }
 void GB_CPU_OPCODE_0x2F()
 {
-    
+    GB_CPU_CPL();
 }
 void GB_CPU_OPCODE_0x3F()
 {
-    
+    GB_CPU_CCF();
 }
 void GB_CPU_OPCODE_0x4F()
 {
