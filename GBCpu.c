@@ -786,6 +786,28 @@ void GB_CPU_Cond_Jump(u16* reg,u8 boolean_flag)
     }
 }
 
+void GB_CPU_Relative_Jump(u8* offset_reg)
+{
+	u16 new_address = GB_CPU_reg_PC + ((s16) *offset_reg);
+	GB_CPU_Jump(&new_address);
+}
+
+void GB_CPU_Cond_Relative_Jump(u8* offset,u8* boolean_flag)
+{
+	u8 flag = Helper_Flag_Test(boolean_flag);
+    if(flag != 0xFF)
+    {
+        if(flag == 0x01)
+        {
+            GB_CPU_Relative_Jump(offset);
+        }
+    }
+    else
+    {
+        // A wild exception appears
+    }
+}
+
 void GB_CPU_Call(u16* reg)
 {
     GB_CPU_PUSH_16(&GB_CPU_reg_PC);

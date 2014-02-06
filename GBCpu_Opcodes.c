@@ -8,13 +8,15 @@ void GB_CPU_OPCODE_0x10()
 {
     GB_CPU_Stop();
 }
-void GB_CPU_OPCODE_0x20()
+void GB_CPU_OPCODE_0x20() // Relative JP
 {
-    
+    u8 8_bit_value = GB_Get_u8_PC();
+    GB_CPU_Cond_Relative_Jump(&8_bit_value,0x08);   
 }
 void GB_CPU_OPCODE_0x30()
 {
-    
+    u8 8_bit_value = GB_Get_u8_PC();
+    GB_CPU_Cond_Relative_Jump(&8_bit_value,0x02);   
 }
 void GB_CPU_OPCODE_0x40()
 {
@@ -50,11 +52,11 @@ void GB_CPU_OPCODE_0xB0()
 }
 void GB_CPU_OPCODE_0xC0()
 {
-    //Conditional return nz
+    GB_CPU_Cond_Return(0x08);
 }
 void GB_CPU_OPCODE_0xD0()
 {
-    //Conditional return nc
+    GB_CPU_Cond_Return(0x02);
 }
 void GB_CPU_OPCODE_0xE0()
 {
@@ -186,11 +188,13 @@ void GB_CPU_OPCODE_0xB2()
 }
 void GB_CPU_OPCODE_0xC2()
 {
-    //condtional jp nz
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Cond_Jump(&new_address,GB_FLAG_NOT_Z);
 }
 void GB_CPU_OPCODE_0xD2()
 {
-    //conditional jp nc
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Cond_Jump(&new_address,GB_FLAG_NOT_C);
 }
 void GB_CPU_OPCODE_0xE2()
 {
@@ -253,7 +257,8 @@ void GB_CPU_OPCODE_0xB3()
 }
 void GB_CPU_OPCODE_0xC3()
 {
-    
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Jump(&new_address);
 }
 void GB_CPU_OPCODE_0xD3()
 {
@@ -317,15 +322,21 @@ void GB_CPU_OPCODE_0xB4()
 }
 void GB_CPU_OPCODE_0xC4()
 {
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Cond_Call(&new_address,GB_FLAG_NOT_Z);
 }
 void GB_CPU_OPCODE_0xD4()
 {
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Cond_Call(&new_address,GB_FLAG_NOT_C);
 }
 void GB_CPU_OPCODE_0xE4()
 {
+    // SIGNAL FAULT
 }
 void GB_CPU_OPCODE_0xF4()
 {
+    // SIGNAL FAULT
 }
 void GB_CPU_OPCODE_0x05()
 {
@@ -511,23 +522,23 @@ void GB_CPU_OPCODE_0x67()
 }
 void GB_CPU_OPCODE_0x77()
 {
-    GB_CPU_ADD_8(GB_CPU_reg_AF);
+    // TO DO 
 }
 void GB_CPU_OPCODE_0x87()
 {
-    GB_CPU_SUB_8(GB_CPU_reg_AF);
+    GB_CPU_ADD_8(GB_CPU_reg_AF);
 }
 void GB_CPU_OPCODE_0x97()
 {
-    GB_CPU_AND(GB_CPU_reg_AF);
+    GB_CPU_SUB_8(GB_CPU_reg_AF);
 }
 void GB_CPU_OPCODE_0xA7()
 {
-    GB_CPU_OR(GB_CPU_reg_AF);
+    GB_CPU_AND(GB_CPU_reg_AF);
 }
 void GB_CPU_OPCODE_0xB7()
 {
-    
+    GB_CPU_OR(GB_CPU_reg_AF);
 }
 void GB_CPU_OPCODE_0xC7()
 {
@@ -551,15 +562,18 @@ void GB_CPU_OPCODE_0x08()
 }
 void GB_CPU_OPCODE_0x18()
 {
-    
+    u8 u8_bit_value = GB_Get_u8_PC();
+    GB_CPU_Relative_Jump(&u8_bit_value);
 }
 void GB_CPU_OPCODE_0x28()
 {
-    
+    u8 u8_bit_value = GB_Get_u8_PC();
+    GB_CPU_Cond_Relative_Jump(&u8_bit_value,GB_FLAG_Z);   
 }
 void GB_CPU_OPCODE_0x38()
 {
-    
+    u8 u8_bit_value = GB_Get_u8_PC();
+    GB_CPU_Cond_Relative_Jump(&u8_bit_value,GB_FLAG_C);   
 }
 void GB_CPU_OPCODE_0x48()
 {
@@ -595,11 +609,11 @@ void GB_CPU_OPCODE_0xB8()
 }
 void GB_CPU_OPCODE_0xC8()
 {
-    
+    GB_CPU_Cond_Return(GB_FLAG_Z);
 }
 void GB_CPU_OPCODE_0xD8()
 {
-    
+    GB_CPU_Cond_Return(GB_FLAG_C);   
 }
 void GB_CPU_OPCODE_0xE8()
 {
@@ -611,19 +625,19 @@ void GB_CPU_OPCODE_0xF8()
 }
 void GB_CPU_OPCODE_0x09()
 {
-    
+    GB_CPU_ADD_16((u16*) GB_CPU_reg_BC);
 }
 void GB_CPU_OPCODE_0x19()
 {
-    
+    GB_CPU_ADD_16((u16*) GB_CPU_reg_DE);   
 }
 void GB_CPU_OPCODE_0x29()
 {
-    
+    GB_CPU_ADD_16((u16*) GB_CPU_reg_HL);
 }
 void GB_CPU_OPCODE_0x39()
 {
-    
+    GB_CPU_ADD_16((u16*) GB_CPU_reg_SP);
 }
 void GB_CPU_OPCODE_0x49()
 {
@@ -659,15 +673,16 @@ void GB_CPU_OPCODE_0xB9()
 }
 void GB_CPU_OPCODE_0xC9()
 {
-    
+    GB_CPU_Return();
 }
 void GB_CPU_OPCODE_0xD9()
 {
-    
+    GB_CPU_Return();
+    GB_CPU_EI();
 }
 void GB_CPU_OPCODE_0xE9()
 {
-    
+    u8 offset_reg = GB_Get_Main_Memory((u16*)GB_Get_reg_HL);
 }
 void GB_CPU_OPCODE_0xF9()
 {
@@ -723,11 +738,13 @@ void GB_CPU_OPCODE_0xBA()
 }
 void GB_CPU_OPCODE_0xCA()
 {
-    
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Cond_Jump(&new_address,GB_FLAG_Z);
 }
 void GB_CPU_OPCODE_0xDA()
 {
-    
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Cond_Jump(&new_address,GB_FLAG_C);   
 }
 void GB_CPU_OPCODE_0xEA()
 {
@@ -739,19 +756,19 @@ void GB_CPU_OPCODE_0xFA()
 }
 void GB_CPU_OPCODE_0x0B()
 {
-    
+    GB_CPU_DEC_16((u16*)GB_CPU_reg_BC);
 }
 void GB_CPU_OPCODE_0x1B()
 {
-    
+    GB_CPU_DEC_16((u16*)GB_CPU_reg_DE);    
 }
 void GB_CPU_OPCODE_0x2B()
 {
-    
+    GB_CPU_DEC_16((u16*)GB_CPU_reg_HL);
 }
 void GB_CPU_OPCODE_0x3B()
 {
-    
+    GB_CPU_DEC_16((u16*)GB_CPU_reg_SP);
 }
 void GB_CPU_OPCODE_0x4B()
 {
@@ -791,31 +808,31 @@ void GB_CPU_OPCODE_0xCB()
 }
 void GB_CPU_OPCODE_0xDB()
 {
-    
+    // SIGNAL FAULT
 }
 void GB_CPU_OPCODE_0xEB()
 {
-    
+    // SIGNAL FAULT
 }
 void GB_CPU_OPCODE_0xFB()
 {
-    
+    GB_CPU_EI();
 }
 void GB_CPU_OPCODE_0x0C()
 {
-    
+    GB_CPU_INC_8(&(GB_CPU_reg_BC[1]);
 }
 void GB_CPU_OPCODE_0x1C()
 {
-    
+    GB_CPU_INC_8(&(GB_CPU_reg_DE[1]);   
 }
 void GB_CPU_OPCODE_0x2C()
 {
-    
+    GB_CPU_INC_8(&(GB_CPU_reg_HL[1]);   
 }
 void GB_CPU_OPCODE_0x3C()
 {
-    
+    GB_CPU_INC_8(&(GB_CPU_reg_AF[0]);   
 }
 void GB_CPU_OPCODE_0x4C()
 {
@@ -851,35 +868,37 @@ void GB_CPU_OPCODE_0xBC()
 }
 void GB_CPU_OPCODE_0xCC()
 {
-    
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Cond_Call(&new_address,GB_FLAG_Z);
 }
 void GB_CPU_OPCODE_0xDC()
 {
-    
+    u16 new_address = GB_Get_u16_PC();
+    GB_CPU_Cond_Call(&new_address,GB_FLAG_C);   
 }
 void GB_CPU_OPCODE_0xEC()
 {
-    
+    // SIGNAL FAULT
 }
 void GB_CPU_OPCODE_0xFC()
 {
-    
+    // SIGNAL FAULT   
 }
 void GB_CPU_OPCODE_0x0D()
 {
-    
+    GB_CPU_INC_8(&(GB_CPU_reg_BC[1]));
 }
 void GB_CPU_OPCODE_0x1D()
 {
-    
+    GB_CPU_INC_8(&(GB_CPU_reg_DE[1]));   
 }
 void GB_CPU_OPCODE_0x2D()
 {
-    
+    GB_CPU_INC_8(&(GB_CPU_reg_HL[1]));
 }
 void GB_CPU_OPCODE_0x3D()
 {
-    
+    GB_CPU_INC_8(&(GB_CPU_reg_AF[0]));
 }
 void GB_CPU_OPCODE_0x4D()
 {

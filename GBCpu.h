@@ -8,7 +8,6 @@ For info on supported commands see: z80 CPU documentation &
 http://gbdev.gg8.se/files/docs/mirrors/pandocs.html#cpucomparisionwithz80
 
 */
-
 #include "GBCore.h"
 
 // CPU state flags
@@ -17,24 +16,31 @@ u8 cpu_stop;
 u8 cpu_interrupt_mode;
 
 
+#define GB_FLAG_C     0x01
+#define GB_FLAG_NOT_C 0x02
+#define GB_FLAG_Z     0x04
+#define GB_FLAG_NOT_Z 0x08 
+
+
 // Keeps a link to GB_main_memory
 extern u8* GB_main_memory;
 
-/*
-Game boy Registers:
- 
- The AF Register is very special,
- The High register is the accumulator, where operations are stored,
- 
- The Low register is used for flags
- The Flag Register (lower 8bit of AF register)
- Bit  Name  Set Clr  Expl.
- 7    zf    Z   NZ   Zero Flag
- 6    n     -   -    Add/Sub-Flag (BCD)
- 5    h     -   -    Half Carry Flag (BCD)
- 4    cy    C   NC   Carry Flag
- 3-0  -     -   -    Not used (always zero)
-*/
+
+/*------------------------------------------------------------------\
+|Game boy Registers:                                                |
+|                                                                   |
+| The AF Register is very special,                                  |
+| The High register is the accumulator, where operations are stored,|
+|                                                                   |
+| The Low register is used for flags                                |
+| The Flag Register (lower 8bit of AF register)                     |
+| Bit  Name  Set Clr  Expl.                                         |
+| 7    zf    Z   NZ   Zero Flag                                     |
+| 6    n     -   -    Add/Sub-Flag (BCD)                            |
+| 5    h     -   -    Half Carry Flag (BCD)                         |
+| 4    cy    C   NC   Carry Flag                                    |
+| 3-0  -     -   -    Not used (always zero)                        |
+\------------------------------------------------------------------*/
 u8 GB_CPU_reg_AF[2];
 u8 GB_CPU_reg_BC[2];
 u8 GB_CPU_reg_DE[2];
@@ -61,6 +67,17 @@ void GB_CPU_Reset_Flag_N() { u8_Reset_Bit(&GB_CPU_reg_AF[1],6); }
 void GB_CPU_Reset_Flag_H() { u8_Reset_Bit(&GB_CPU_reg_AF[1],5); }
 void GB_CPU_Reset_Flag_C() { u8_Reset_Bit(&GB_CPU_reg_AF[1],4); }
 
+
+
+/*----------------------------------------------------\
+|   CPU Control flow operations                       |
+|                                                     |
+| boolean_flag convention:                            |
+| 0x01:c | 0x02:nc | 0x04:z | 0x08:nz                 |
+\----------------------------------------------------*/
+
+u8 Helper_Flag_Test(u8 boolean_flag);
+
 void GB_CPU_Set_All_flags();
 void GB_CPU_Reset_All_Flags();
 
@@ -82,15 +99,12 @@ u16 GB_Get_u16_PC();	// get immediate 16 bits value
 
 
 
-
-
-
-/*
-Game Boy CPU Instruction Set !
-
-Thanks to this guy, it's all pretty much there:
-http://nocash.emubase.de/pandocs.htm#cpuinstructionset
-*/
+/*---------------------------------------------------------\
+|         Game Boy CPU Instruction Set !                   |
+|                                                          |
+|Thanks to this guy, it's all pretty much there:           |
+|http://nocash.emubase.de/pandocs.htm#cpuinstructionset    |
+\---------------------------------------------------------*/
 
 // 8bit-Load Commands
 void GB_CPU_LD_8(u8* loadTo, u8* from);
@@ -153,16 +167,11 @@ void GB_CPU_Stop();
 void GB_CPU_DI();
 void GB_CPU_EI();
 
-/*
-   CPU Control flow operations
- 
- boolean_flag convention:
- 0x01:c | 0x02:nc | 0x04:z | 0x08:nz
-*/
 
-u8 Helper_Flag_Test(u8 boolean_flag);
 void GB_CPU_Jump(u16* reg);
 void GB_CPU_Cond_Jump(u16* reg,u8 boolean_flag);
+void GB_CPU_Relative_Jump(u8* offset);
+void GB_CPU_Cond_Relative_Jump(u8* offset,u8* boolean_flag);
 void GB_CPU_Call(u16* reg);
 void GB_CPU_Cond_Call(u16* reg,u8 boolean_flag);
 void GB_CPU_Return();
@@ -171,14 +180,12 @@ void GB_CPU_Cond_Return(u8 boolean_flag);
 
 
 
-
-
-/*
-Game Boy actual machine Opcodes: 
-
-Defines opcode for the CPU, Please refer to the Gameboy CPU documentation to
-find the table of instructions related to those opcodes
-*/
+/*---------------------------------------------------------------------------\
+|         Game Boy actual machine Opcodes:                                   |
+|                                                                            |
+|Defines opcode for the CPU, Please refer to the Gameboy CPU documentation to|
+|find the table of instructions related to those opcodes                     |
+\---------------------------------------------------------------------------*/
 
 void GB_CPU_OPCODE_0x00(void);
 void GB_CPU_OPCODE_0x01(void);
