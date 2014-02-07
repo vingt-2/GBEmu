@@ -748,25 +748,25 @@ void GB_CPU_Jump(u16* reg)
 
 u8 Helper_Flag_Test(u8 boolean_flag)
 {
-    if(boolean_flag == 0x01)
+    if(boolean_flag == GB_FLAG_C)
     {
         return GB_CPU_Get_Flag_C();
     }
-    else if(boolean_flag == 0x02)
+    else if(boolean_flag == GB_FLAG_NOT_C)
     {
         return ~GB_CPU_Get_Flag_C();
     }
-    else if(boolean_flag == 0x04)
+    else if(boolean_flag == GB_FLAG_Z)
     {
         return GB_CPU_Get_Flag_Z();
     }
-    else if(boolean_flag == 0x08)
+    else if(boolean_flag == GB_FLAG_NOT_Z)
     {
         return ~GB_CPU_Get_Flag_Z();
     }
     else
     {
-        return 0xFF;
+        return GB_FLAG_WTF;
     }
 }
 
@@ -792,7 +792,7 @@ void GB_CPU_Relative_Jump(u8* offset_reg)
 	GB_CPU_Jump(&new_address);
 }
 
-void GB_CPU_Cond_Relative_Jump(u8* offset,u8* boolean_flag)
+void GB_CPU_Cond_Relative_Jump(u8* offset,u8 boolean_flag)
 {
 	u8 flag = Helper_Flag_Test(boolean_flag);
     if(flag != 0xFF)

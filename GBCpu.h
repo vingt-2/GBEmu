@@ -8,19 +8,13 @@ For info on supported commands see: z80 CPU documentation &
 http://gbdev.gg8.se/files/docs/mirrors/pandocs.html#cpucomparisionwithz80
 
 */
+#pragma once
 #include "GBCore.h"
 
 // CPU state flags
 u8 cpu_wait_for_interrupt;
 u8 cpu_stop;
 u8 cpu_interrupt_mode;
-
-
-#define GB_FLAG_C     0x01
-#define GB_FLAG_NOT_C 0x02
-#define GB_FLAG_Z     0x04
-#define GB_FLAG_NOT_Z 0x08 
-
 
 // Keeps a link to GB_main_memory
 extern u8* GB_main_memory;
@@ -76,15 +70,21 @@ void GB_CPU_Reset_Flag_C() { u8_Reset_Bit(&GB_CPU_reg_AF[1],4); }
 | 0x01:c | 0x02:nc | 0x04:z | 0x08:nz                 |
 \----------------------------------------------------*/
 
+#define GB_FLAG_C     0x01
+#define GB_FLAG_NOT_C 0x02
+#define GB_FLAG_Z     0x04
+#define GB_FLAG_NOT_Z 0x08
+#define GB_FLAG_WTF   0xFF
+
 u8 Helper_Flag_Test(u8 boolean_flag);
 
 void GB_CPU_Set_All_flags();
 void GB_CPU_Reset_All_Flags();
 
-u8 GB_CPU_Get_Flag_H()			{ return (GB_CPU_reg_AF[1] & 0x20);	}
-u8 GB_CPU_Get_Flag_N()			{ return (GB_CPU_reg_AF[1] & 0x40);	}
+u8 GB_CPU_Get_Flag_H()			{ return (GB_CPU_reg_AF[1] & 0x20); }
+u8 GB_CPU_Get_Flag_N()			{ return (GB_CPU_reg_AF[1] & 0x40); }
 u8 GB_CPU_Get_Flag_C()			{ return (GB_CPU_reg_AF[1] & 0x10); }
-u8 GB_CPU_Get_Flag_Z()			{ return (GB_CPU_reg_AF[1] & 0x80);	}
+u8 GB_CPU_Get_Flag_Z()			{ return (GB_CPU_reg_AF[1] & 0x80); }
 
 
 // Process command
@@ -171,7 +171,7 @@ void GB_CPU_EI();
 void GB_CPU_Jump(u16* reg);
 void GB_CPU_Cond_Jump(u16* reg,u8 boolean_flag);
 void GB_CPU_Relative_Jump(u8* offset);
-void GB_CPU_Cond_Relative_Jump(u8* offset,u8* boolean_flag);
+void GB_CPU_Cond_Relative_Jump(u8* offset,u8 boolean_flag);
 void GB_CPU_Call(u16* reg);
 void GB_CPU_Cond_Call(u16* reg,u8 boolean_flag);
 void GB_CPU_Return();

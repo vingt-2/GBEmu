@@ -6,6 +6,7 @@ Analogy with the actual hardware would be a motherboard
 */
 #define GB_MAIN_MEMORY_SIZE 0xFFFF-1
 
+#pragma once
 #include <stdint.h>
 #include <stdio.h>
 
@@ -38,11 +39,6 @@ u8* GB_main_memory;
 u8	GB_Get_Main_Memory(u16* address_reg);
 void GB_Set_Main_Memory(u16* address_reg,u8* value_reg);
 
-
-
-//
-//   End of /!\
-//
 
 
 int GB_boot();
