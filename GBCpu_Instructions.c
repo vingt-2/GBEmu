@@ -113,19 +113,6 @@ void GB_CPU_LD_8(u8* loadTo, u8* from)
 {
 	*loadTo = *from;
 }
-
-void GB_CPU_LDI_8(u8* loadTo, u8* from)
-{
-	*loadTo = *from;
-	*from = *from + 1;
-}
-
-void GB_CPU_LDD_8(u8* loadTo, u8* from)
-{
-	*loadTo = *from;
-	*from = *from - 1;
-}
-
 // 16bit-load Commands
 void GB_CPU_LD_16(u16* loadTo, u16* from)
 {
